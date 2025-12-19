@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  autovendia-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base  # Usa apenas a base sem build de produção
+    container_name: autovendia-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      # Montar código fonte para hot reload
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      # Adicione outras variáveis de ambiente de desenvolvimento aqui
+    command: npm run dev
+    networks:
+      - autovendia-dev-network
+    
+networks:
+  autovendia-dev-network:
+    driver: bridge

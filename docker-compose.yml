@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  autovendia:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: autovendia-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      # Adicione suas variáveis de ambiente aqui
+      # Exemplo:
+      # - DATABASE_URL=${DATABASE_URL}
+      # - API_KEY=${API_KEY}
+    # Se você tiver um arquivo .env, descomente a linha abaixo
+    # env_file:
+    #   - .env.production
+    networks:
+      - autovendia-network
+    # Healthcheck para verificar se a aplicação está rodando
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  autovendia-network:
+    driver: bridge
+
+# Se você precisar de volumes para dados persistentes, adicione aqui
+# volumes:
+#   app-data:

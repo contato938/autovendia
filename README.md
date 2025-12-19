@@ -209,12 +209,45 @@ Cache e sincronização de dados:
 
 ## 🚀 Como Executar
 
+### Opção 1: Desenvolvimento Local
+
 ```bash
 cd /Users/macbook/Documents/GitHub/new_clinica-ia-conecta/autovendia
+npm install
 npm run dev
 ```
 
 Abra [http://localhost:3000](http://localhost:3000) no navegador.
+
+### Opção 2: Docker (Produção)
+
+**Início Rápido com Docker Compose:**
+
+```bash
+# Construir e iniciar
+docker-compose up --build
+
+# Ou em background
+docker-compose up -d
+```
+
+**Usando o script auxiliar:**
+
+```bash
+# Tornar o script executável (apenas primeira vez)
+chmod +x docker.sh
+
+# Construir
+./docker.sh build
+
+# Iniciar
+./docker.sh start
+
+# Ver outros comandos
+./docker.sh help
+```
+
+**📖 Para instruções detalhadas sobre Docker, veja [README_DOCKER.md](README_DOCKER.md)**
 
 **Credenciais de teste:**
 

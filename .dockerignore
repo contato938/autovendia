@@ -1,0 +1,50 @@
+# Dependências
+node_modules
+npm-debug.log
+
+# Build
+.next
+out
+dist
+build
+
+# Variáveis de ambiente (não incluir no container)
+.env*.local
+.env
+
+# Git
+.git
+.gitignore
+
+# IDE / Editor
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
+
+# Testes
+coverage
+.nyc_output
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Documentação
+README.md
+README_DOCKER.md
+docs
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Logs
+*.log
+logs
