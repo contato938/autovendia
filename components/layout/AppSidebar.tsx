@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, Home, Inbox, Search, Settings, list, Trello, Users, BarChart3, PieChart } from "lucide-react"
+import { Settings, Trello, Users, BarChart3 } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -11,8 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
-  SidebarFooter,
-  useSidebar
+  SidebarFooter
 } from "@/components/ui/sidebar"
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
