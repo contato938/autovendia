@@ -8,11 +8,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Phone, MessageSquare, Calendar, User, Car, Package, MapPin, Clock, TrendingUp } from 'lucide-react';
+import { Phone, MessageSquare, Car, Package, MapPin, TrendingUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 
 export function LeadDrawer() {
   const { selectedLeadId, isLeadDrawerOpen, closeLeadDrawer } = useStore();
@@ -51,88 +50,88 @@ export function LeadDrawer() {
             </SheetHeader>
 
             <div className="mt-6 space-y-6">
-              {/* Summary Cards */}
-              <div className="grid grid-cols-2 gap-3">
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+              {/* Summary Cards - Reduced shadows */}
+              <div className="grid grid-cols-2 gap-4">
+                <Card className="border-2">
+                  <CardContent className="pt-6 pb-4">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                       <TrendingUp className="h-4 w-4" />
                       Score
                     </div>
-                    <div className="text-2xl font-bold">{lead.score}</div>
+                    <div className="text-3xl font-bold">{lead.score}</div>
                   </CardContent>
                 </Card>
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                <Card className="border-2">
+                  <CardContent className="pt-6 pb-4">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                       <MessageSquare className="h-4 w-4" />
                       Canal
                     </div>
-                    <div className="text-2xl font-bold">{lead.canal}</div>
+                    <div className="text-3xl font-bold">{lead.canal}</div>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Lead Info */}
-              <div className="space-y-3">
-                <h3 className="font-semibold">Informações</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-start gap-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
-                    <div>
+              {/* Lead Info - Better icon alignment */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">Informações</h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-center gap-3">
+                    <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <div className="flex-1">
                       <div className="font-medium">Origem</div>
                       <div className="text-muted-foreground">{lead.origem} {lead.campanha && `• ${lead.campanha}`}</div>
                     </div>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Car className="h-4 w-4 text-muted-foreground mt-0.5" />
-                    <div>
+                  <div className="flex items-center gap-3">
+                    <Car className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <div className="flex-1">
                       <div className="font-medium">Veículo</div>
                       <div className="text-muted-foreground">
                         {lead.vehicle?.marca} {lead.vehicle?.modelo} {lead.vehicle?.ano}
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <Package className="h-4 w-4 text-muted-foreground mt-0.5" />
-                    <div>
+                  <div className="flex items-center gap-3">
+                    <Package className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <div className="flex-1">
                       <div className="font-medium">Peça</div>
                       <div className="text-muted-foreground">
                         {lead.part?.nome} • {lead.part?.sku}
                       </div>
-                      <div className="text-xs text-muted-foreground">{lead.part?.compatibilidadeResumo}</div>
+                      <div className="text-xs text-muted-foreground mt-1">{lead.part?.compatibilidadeResumo}</div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <Separator />
+              <Separator className="my-6" />
 
-              {/* Stage */}
-              <div className="space-y-3">
-                <h3 className="font-semibold">Etapa Atual</h3>
-                <Badge className="text-sm">{lead.etapa}</Badge>
+              {/* Stage - Better spacing */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">Etapa Atual</h3>
+                <Badge className="text-sm px-3 py-1">{lead.etapa}</Badge>
               </div>
 
-              <Separator />
+              <Separator className="my-6" />
 
-              {/* Timeline */}
-              <div className="space-y-3">
-                <h3 className="font-semibold">Histórico de Interações</h3>
+              {/* Timeline - Better spacing */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">Histórico de Interações</h3>
                 {interactions.length === 0 ? (
-                  <div className="text-sm text-muted-foreground text-center py-8">
+                  <div className="text-sm text-muted-foreground text-center py-8 bg-muted/30 rounded-lg">
                     Nenhuma interação registrada
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {interactions.map((interaction) => (
-                      <Card key={interaction.id}>
-                        <CardContent className="pt-4">
+                      <Card key={interaction.id} className="border">
+                        <CardContent className="pt-4 pb-4">
                           <div className="flex items-start gap-3">
                             {interaction.type === 'whatsapp' ? (
-                              <MessageSquare className="h-5 w-5 text-green-600 mt-0.5" />
+                              <MessageSquare className="h-5 w-5 text-green-600 shrink-0" />
                             ) : (
-                              <Phone className="h-5 w-5 text-blue-600 mt-0.5" />
+                              <Phone className="h-5 w-5 text-blue-600 shrink-0" />
                             )}
                             <div className="flex-1 space-y-1">
                               <div className="flex items-center justify-between">
@@ -153,18 +152,18 @@ export function LeadDrawer() {
                 )}
               </div>
 
-              <Separator />
+              <Separator className="my-6" />
 
-              {/* AI Summary Mock */}
-              <div className="space-y-3">
-                <h3 className="font-semibold">Resumo da IA</h3>
-                <Card className="bg-accent/50">
-                  <CardContent className="pt-4">
-                    <p className="text-sm">
+              {/* AI Summary - Better styling */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">Resumo da IA</h3>
+                <Card className="bg-accent/30 border-accent">
+                  <CardContent className="pt-4 pb-4">
+                    <p className="text-sm leading-relaxed">
                       Lead qualificado buscando {lead.part?.nome} para {lead.vehicle?.marca} {lead.vehicle?.modelo}.
                       Origem: {lead.origem}. Próximos passos recomendados:
                     </p>
-                    <ul className="mt-2 space-y-1 text-sm list-disc list-inside text-muted-foreground">
+                    <ul className="mt-3 space-y-1.5 text-sm list-disc list-inside text-muted-foreground">
                       <li>Enviar orçamento detalhado</li>
                       <li>Confirmar compatibilidade da peça</li>
                       <li>Agendar retorno em 24h</li>
