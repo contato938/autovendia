@@ -1,9 +1,3 @@
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-  } from "@/components/ui/accordion"; // Wait, I need to check if Accordion exists.
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
