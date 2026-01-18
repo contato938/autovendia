@@ -19,7 +19,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "AUTOVEND IA",
+  title: "AutovendaIA",
   description: "SaaS de Automação de Vendas",
 };
 
