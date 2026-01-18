@@ -1,3 +1,5 @@
+import type { DashboardSummary } from './googleAdsDashboard';
+
 export type Json =
   | string
   | number
@@ -385,7 +387,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      dashboard_google_summary: {
+        Args: {
+          filters: Json
+        }
+        Returns: DashboardSummary
+      }
     }
     Enums: {
       [_ in never]: never
