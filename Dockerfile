@@ -22,11 +22,16 @@ COPY . .
 # Descomente a linha abaixo caso queira desabilitar a telemetria durante o build.
 # ENV NEXT_TELEMETRY_DISABLED=1
 
-# Variáveis públicas precisam estar disponíveis no build do Next.js
-ARG NEXT_PUBLIC_SUPABASE_URL
-ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+# Variáveis públicas com placeholders - serão substituídas em runtime
+ARG NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder-anon-key
+ARG NEXT_PUBLIC_SITE_URL=http://localhost:3000
+ARG NEXT_PUBLIC_API_BASE_URL=https://placeholder.api.base.url
+
 ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
 
 RUN npm run build
 
@@ -35,9 +40,6 @@ FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-# Manter variáveis públicas no runtime também
-ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
-ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 # Descomente a linha abaixo para desabilitar a telemetria durante o runtime.
 # ENV NEXT_TELEMETRY_DISABLED=1
 
@@ -55,6 +57,10 @@ RUN mkdir .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Copiar entrypoint script
+COPY --chown=nextjs:nodejs entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 USER nextjs
 
 EXPOSE 3000
@@ -62,5 +68,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Comando para iniciar a aplicação
-CMD ["node", "server.js"]
+# Usar entrypoint para substituir placeholders em runtime
+ENTRYPOINT ["/app/entrypoint.sh"]

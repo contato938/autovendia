@@ -30,10 +30,14 @@
    const [error, setError] = useState('');
    const [successMessage, setSuccessMessage] = useState('');
  
-   const redirectTo = useMemo(() => {
-     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-     return `${siteUrl}/reset`;
-   }, []);
+  const redirectTo = useMemo(() => {
+    // Usar window.location.origin no browser para evitar dependência de env no build
+    if (typeof window !== 'undefined') {
+      return `${window.location.origin}/reset`;
+    }
+    // Fallback para SSR (não será usado neste client component, mas mantém compatibilidade)
+    return 'http://localhost:3000/reset';
+  }, []);
  
    useEffect(() => {
      if (typeof window !== 'undefined') {
