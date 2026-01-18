@@ -1,8 +1,18 @@
-# AUTOVEND IA - SaaS Frontend MVP
+# AutovendaIA - SaaS Frontend
 
 ## 🎯 Visão Geral
 
-O **AUTOVEND IA** é um SaaS completo de automação de vendas para autopeças, desenvolvido com Next.js, TypeScript, TailwindCSS e shadcn/ui. Todo o sistema funciona 100% com dados mockados locais, sem necessidade de backend.
+**AutovendaIA** é um SaaS completo focado em **performance de campanhas** (Google Ads e Meta Ads), **atribuição clique → WhatsApp → venda**, e **envio de conversões offline**. Desenvolvido com Next.js 16, TypeScript, TailwindCSS, shadcn/ui e **Supabase**.
+
+## ✨ Nova Integração Supabase
+
+✅ **Autenticação real** com Supabase Auth
+✅ **Banco de dados PostgreSQL** com RLS multi-tenant
+✅ **7 tabelas** completas (tenants, profiles, campaigns, leads, interactions, conversions, integrations)
+✅ **Tipos TypeScript** gerados automaticamente do schema
+✅ **RPC otimizada** para dashboard com fallback para fixtures
+
+**👉 Veja o guia completo em [INTEGRACAO_SUPABASE.md](INTEGRACAO_SUPABASE.md)**
 
 ## ✅ Funcionalidades Implementadas
 
@@ -10,101 +20,103 @@ O **AUTOVEND IA** é um SaaS completo de automação de vendas para autopeças, 
 
 - Formulário com validação de email e senha
 - Estados de loading e erro
-- Mock de autenticação com Zustand
+- Autenticação via token fake no localStorage
 - Redirecionamento automático para `/dashboard` após login
-- Credenciais de teste: `carlos@autovend.ia`, `ana@autovend.ia`, `pedro@autovend.ia`
+- Credenciais de teste: `carlos@autovend.ia`, `ana@autovend.ia`
 
 ### 2. **Dashboard** (`/dashboard`)
 
-- **6 KPIs principais:**
-  - Leads Gerados
-  - Orçamentos Enviados
+- **10 KPIs principais:**
+  - Investimento
+  - Impressões
+  - Cliques
+  - CTR
+  - CPC
+  - Leads
+  - CPL (Custo por Lead)
   - Vendas
-  - Taxa de Conversão
-  - CAC Estimado
-  - ROI Estimado
-- **Gráfico de Funil:** Visualização da jornada dos leads (Leads → Orçamentos → Vendas)
-- **Gráfico de ROI:** Linha do tempo mostrando evolução do ROI
-- **Tabela de Últimos Leads:** Acesso rápido aos 5 leads mais recentes
-- Clique em qualquer lead abre o Drawer de detalhes
+  - Receita
+  - ROAS (Return on Ad Spend)
+- **Gráfico de Tendência (30 dias):** Evolução de investimento, leads, vendas e receita
+- **Gráfico de Funil:** Clique → WhatsApp → Venda
+- **Tabela Top Campanhas:** Ordenável por gasto, leads ou ROAS
 
-### 3. **Leads** (`/leads`)
+### 3. **Campanhas** (`/campaigns`)
 
-- **Lista completa** de todos os leads (35+ mockados)
+- Lista completa de campanhas Google Ads e Meta Ads
+- **Filtros:**
+  - Busca por nome
+  - Plataforma (Google/Meta)
+  - Status (Ativa/Pausada/Encerrada)
+- **Colunas:**
+  - Nome da campanha
+  - Plataforma
+  - Status
+  - Gasto
+  - Leads
+  - Vendas
+  - Receita
+  - ROAS
+
+### 4. **Leads** (`/leads`)
+
+- Lista completa de leads com **atribuição completa**
 - **Filtros:**
   - Busca por nome ou telefone
-  - Filtro por etapa do funil
-- **Tabela com colunas:**
-  - Lead (nome + telefone)
-  - Veículo / Peça
-  - Origem (Google Ads, Indicação, Orgânico)
-  - Canal (WhatsApp ou Telefone)
-  - Etapa atual
-  - Score (0-100)
-  - Último contato
-  - Botão de ações
-- Clique em qualquer linha abre o Drawer de detalhes
+  - Etapa (Novo, Em conversa WhatsApp, Qualificado, Vendido, Perdido)
+  - Plataforma
+- **Drawer de detalhes do Lead:**
+  - **Atribuição:** Campanha, Adset, Creative, GCLID/FBCLID, UTMs
+  - **Timeline WhatsApp:** Histórico de conversas
+  - **Venda:** Marcar como vendido com valor
+  - **Mover etapa:** Alterar estágio do lead
+- Clique em qualquer linha abre o drawer
 
-### 4. **Pipeline** (`/pipeline`)
+### 5. **Conversões Offline** (`/conversions`)
 
-- **Kanban Board com Drag & Drop** (usando `@hello-pangea/dnd`)
-- **7 colunas de etapas:**
-  1. Novo
-  2. Em atendimento
-  3. Orçamento gerado
-  4. Orçamento enviado
-  5. Negociação
-  6. Fechado
-  7. Perdido
-- **Cards de lead mostram:**
-  - Nome do lead
-  - Veículo e peça
-  - Origem/campanha
-  - Score
-  - Tempo desde último contato
-- Arrastar e soltar atualiza a etapa automaticamente
-- Toast de confirmação após atualização
-- Scroll independente por coluna
+- **Cards de métricas:**
+  - Conversões hoje
+  - Taxa de falha
+  - Fila pendente
+- **Tabela de histórico:**
+  - Lead ID
+  - Plataforma
+  - Evento (purchase, lead)
+  - Valor
+  - Data do evento
+  - Data de envio
+  - Status (Enviado, Falhou, Na fila)
+  - Botão "Retry" para conversões falhadas
 
-### 5. **Drawer de Detalhes do Lead**
+### 6. **Integrações** (`/integrations`)
 
-- **Informações principais:**
-  - Nome e telefone
-  - Score e canal
-  - Origem e campanha
-  - Veículo completo (marca, modelo, ano)
-  - Peça requisitada (nome, SKU, compatibilidade)
-- **Timeline de Interações:**
-  - WhatsApp (em formato de chat bubble)
-  - Ligações (com transcrição mockada)
-  - Data e hora de cada interação
-- **Resumo da IA (mock):**
-  - Análise automática do lead
-  - Próximos passos recomendados
-- **Botões de ação:**
-  - Gerar Orçamento
-  - Mover Etapa
+- **Cards de status:**
+  - Google Ads
+  - Meta Ads
+  - WhatsApp Business
+- Informações de conexão e última sincronização
+- Botões para conectar/revalidar/desconectar (stubs)
 
-### 6. **Configurações** (`/settings`)
+### 7. **Configurações** (`/settings`)
 
-- Página placeholder com cards para:
-  - Configurações Gerais
+- Seções placeholder:
+  - Empresa
+  - Usuários
+  - Webhooks
   - Notificações
-  - Usuários e Permissões
-  - Integrações
 
-### 7. **App Shell (Layout Global)**
+### 8. **App Shell (Layout Global)**
 
 - **Sidebar colapsável:**
-  - Logo AUTOVEND IA
-  - Menu com: Dashboard, Leads, Pipeline, Configurações
-  - Versão do app no rodapé
+  - Logo AutovendaIA
+  - Menu: Dashboard, Campanhas, Leads, Conversões, Integrações, Configurações
   - Indicador visual de página ativa
+  - Versão no rodapé
 - **TopBar:**
-  - Botão de toggle da sidebar
-  - Seletor de tenant (empresa) com dropdown
-  - **Busca global:** Command palette com atalho ⌘K
-  - Sino de notificações (com contador badge)
+  - Toggle da sidebar
+  - Seletor de empresa (tenant)
+  - **Busca global (⌘K):** Busca leads por nome/telefone e campanhas por nome
+  - Notificações (badge)
   - Avatar do usuário com dropdown (nome, email, logout)
 
 ## 🎨 Design System
@@ -117,8 +129,8 @@ O **AUTOVEND IA** é um SaaS completo de automação de vendas para autopeças, 
 --brand-accent: #68B34D     /* Verde */
 --brand-background: #F5F9FC /* Azul claro */
 --brand-surface: #FFFFFF    /* Branco */
---brand-text: #0F172A        /* Texto escuro */
---brand-muted: #64748B       /* Texto cinza */
+--brand-text: #0F172A       /* Texto escuro */
+--brand-muted: #64748B      /* Texto cinza */
 ```
 
 ### Componentes UI (shadcn/ui)
@@ -137,58 +149,75 @@ Todos os componentes seguem padrão shadcn/ui:
 ```
 autovendia/
 ├── app/
-│   ├── login/
-│   │   └── page.tsx           # Tela de login
-│   ├── dashboard/
-│   │   ├── layout.tsx         # Layout protegido
-│   │   └── page.tsx           # Dashboard com KPIs e gráficos
-│   ├── leads/
-│   │   ├── layout.tsx         # Layout protegido
-│   │   └── page.tsx           # Lista de leads com filtros
-│   ├── pipeline/
-│   │   ├── layout.tsx         # Layout protegido
-│   │   └── page.tsx           # Kanban drag-and-drop
-│   ├── settings/
-│   │   ├── layout.tsx         # Layout protegido
-│   │   └── page.tsx           # Configurações (placeholder)
-│   ├── layout.tsx             # Root layout
-│   ├── page.tsx               # Redireciona para /login
-│   └── globals.css            # Estilos globais + tema
+│   ├── (auth)/
+│   │   └── login/
+│   │       └── page.tsx           # Tela de login
+│   ├── (app)/
+│   │   ├── layout.tsx             # Layout protegido (route group)
+│   │   ├── dashboard/
+│   │   │   └── page.tsx           # Dashboard com KPIs e gráficos
+│   │   ├── campaigns/
+│   │   │   └── page.tsx           # Lista de campanhas
+│   │   ├── leads/
+│   │   │   └── page.tsx           # Lista de leads com filtros
+│   │   ├── conversions/
+│   │   │   └── page.tsx           # Conversões offline
+│   │   ├── integrations/
+│   │   │   └── page.tsx           # Status de integrações
+│   │   └── settings/
+│   │       └── page.tsx           # Configurações
+│   ├── layout.tsx                 # Root layout
+│   ├── page.tsx                   # Redireciona para /login
+│   └── globals.css                # Estilos globais + tema
 ├── components/
-│   ├── ui/                    # shadcn/ui components
+│   ├── ui/                        # shadcn/ui components
 │   ├── layout/
-│   │   ├── AppSidebar.tsx     # Sidebar navegação
-│   │   ├── TopBar.tsx         # Top bar com busca/notificações
-│   │   └── ProtectedLayout.tsx # Layout wrapper autenticado
+│   │   ├── AppShell.tsx           # Shell protegido com auth
+│   │   ├── AppSidebar.tsx         # Sidebar navegação
+│   │   └── TopBar.tsx             # Top bar com busca/notificações
 │   ├── dashboard/
-│   │   └── KPICard.tsx        # Card de KPI reutilizável
+│   │   ├── KPICard.tsx            # Card de KPI reutilizável
+│   │   ├── TrendChart.tsx         # Gráfico de tendência (Recharts)
+│   │   └── FunnelChart.tsx        # Gráfico de funil (Recharts)
 │   ├── leads/
-│   │   └── LeadDrawer.tsx     # Drawer de detalhes do lead
-│   └── query-provider.tsx     # TanStack Query provider
+│   │   └── LeadDrawer.tsx         # Drawer de detalhes do lead
+│   └── query-provider.tsx         # TanStack Query provider
 ├── types/
-│   └── index.ts               # TypeScript interfaces
-├── mocks/
-│   └── data.ts                # Dados mockados (35+ leads)
+│   └── index.ts                   # TypeScript interfaces (novo domínio)
+├── fixtures/
+│   ├── store.ts                   # Fixture store mutável
+│   ├── dashboard.ts               # KPIs e funil mockados
+│   ├── timeSeries.ts              # Dados de tendência
+│   ├── campaigns.ts               # Campanhas mockadas
+│   ├── leads.ts                   # Leads e interações
+│   ├── conversions.ts             # Conversões offline
+│   └── integrations.ts            # Status de integrações
 ├── services/
-│   └── api.ts                 # Mock API com delays simulados
+│   ├── http.ts                    # HTTP client com fallback
+│   ├── auth.ts                    # Serviço de autenticação
+│   ├── dashboard.ts               # Serviço de dashboard
+│   ├── campaigns.ts               # Serviço de campanhas
+│   ├── leads.ts                   # Serviço de leads
+│   ├── conversions.ts             # Serviço de conversões
+│   └── integrations.ts            # Serviço de integrações
 ├── store/
-│   └── useStore.ts            # Zustand store global
+│   └── useStore.ts                # Zustand store global
 └── lib/
-    └── utils.ts               # Utility functions
+    └── utils.ts                   # Utility functions
 ```
 
 ## 🧪 Estado dos Dados
 
-### Mock API (`services/api.ts`)
+### Services + Fixtures (Plugável)
 
-Todas as requisições simulam delay de 300-800ms para parecer real:
+Todos os services tentam bater na API real (se `NEXT_PUBLIC_API_BASE_URL` existir) e, caso contrário, usam fixtures locais:
 
-- `api.auth.login()` - Mock de autenticação
-- `api.leads.list()` - Lista todos os leads
-- `api.leads.getById()` - Busca lead por ID
-- `api.leads.update()` - Atualiza lead (etapa, responsável, etc.)
-- `api.leads.getInteractions()` - Histórico de interações
-- `api.dashboard.getStats()` - KPIs do dashboard
+- `authService` - Autenticação
+- `dashboardService` - KPIs, time series, funil
+- `campaignsService` - Lista e detalhes de campanhas
+- `leadsService` - Lista, detalhes, update de leads
+- `conversionsService` - Lista, retry de conversões
+- `integrationsService` - Status de integrações
 
 ### Zustand Store
 
@@ -203,13 +232,41 @@ Gerencia estado global:
 
 Cache e sincronização de dados:
 
-- Query keys: `['leads']`, `['lead', id]`, `['interactions', leadId]`, `['dashboardStats']`
+- Query keys: `['leads']`, `['campaigns']`, `['conversions']`, `['dashboard', 'kpis']`, etc.
 - Invalidação automática após mutations
 - Loading e error states
 
 ## 🚀 Como Executar
 
-### Opção 1: Desenvolvimento Local
+### Opção 1: Desenvolvimento Local com Supabase (Recomendado)
+
+```bash
+cd /Users/macbook/Documents/GitHub/new_clinica-ia-conecta/autovendia
+
+# 1. Instalar dependências
+npm install
+
+# 2. Configurar variáveis de ambiente
+# Crie .env.local com as credenciais do Supabase
+# (veja INTEGRACAO_SUPABASE.md para detalhes)
+
+# 3. Criar usuário no Supabase Dashboard
+# Email: carlos@autovend.ia
+# Password: 123456
+
+# 4. Popular banco com dados de teste (opcional)
+# Execute o SQL de seed em INTEGRACAO_SUPABASE.md
+
+# 5. Iniciar servidor de desenvolvimento
+npm run dev
+```
+
+Abra [http://localhost:3000](http://localhost:3000) no navegador.
+
+**Credenciais:**
+- `carlos@autovend.ia` / senha definida no Supabase
+
+### Opção 2: Desenvolvimento Local (Fixtures - Legacy)
 
 ```bash
 cd /Users/macbook/Documents/GitHub/new_clinica-ia-conecta/autovendia
@@ -249,44 +306,51 @@ chmod +x docker.sh
 
 **📖 Para instruções detalhadas sobre Docker, veja [README_DOCKER.md](README_DOCKER.md)**
 
-**Credenciais de teste:**
+**Credenciais de teste (modo fixture):**
 
 - `carlos@autovend.ia` (Admin)
 - `ana@autovend.ia` (Vendedor)
-- `pedro@autovend.ia` (Vendedor)
-- Qualquer senha funciona no mock
+- Qualquer senha funciona no mock (apenas sem Supabase configurado)
 
 ## ✨ Diferenciais
 
-1. **100% Funcional Offline** - Nenhuma dependência de backend
-2. **UI Premium** - Design limpo, moderno, responsivo
-3. **Drag & Drop Real** - Pipeline kanban totalmente funcional
-4. **Estados de Loading** - Skeletons e feedback visual em toda aplicação
-5. **Toasts** - Feedback para todas as ações do usuário
-6. **Busca Global** - Command palette estilo VS Code (⌘K)
-7. **Responsivo** - Funciona em desktop, tablet e mobile
-8. **Acessibilidade** - Foco visível, navegação por teclado
-9. **TypeScript 100%** - Type safety completo
-10. **Clean Code** - Componentes reutilizáveis e bem organizados
+1. **Integração Supabase Completa** - Auth, RLS, tipos gerados, multi-tenant
+2. **Backend Real + Fallback Fixtures** - Funciona com ou sem dados
+3. **UI Premium** - Design limpo, moderno, responsivo
+4. **Route Groups** - Organização limpa de rotas (auth vs app)
+5. **Estados de Loading** - Skeletons e feedback visual em toda aplicação
+6. **Toasts** - Feedback para todas as ações do usuário
+7. **Busca Global** - Command palette estilo VS Code (⌘K)
+8. **Responsivo** - Funciona em desktop, tablet e mobile
+9. **Acessibilidade** - Foco visível, navegação por teclado
+10. **TypeScript 100%** - Type safety completo + tipos gerados do banco
+11. **Clean Code** - Componentes reutilizáveis e bem organizados
+12. **RLS Multi-tenant** - Isolamento completo entre tenants no banco
 
-## 📊 Dados Mockados
+## 📊 Dados
 
-- **35+ Leads** com informações completas
-- **3 Usuários** (Carlos, Ana, Pedro)
-- **1 Tenant** (AutoPeças Silva)
-- **Interações** de WhatsApp e ligações
-- **KPIs** realistas do dashboard
-- **Veículos** das principais marcas (Fiat, VW, Chevrolet, Ford, Toyota)
-- **Peças** variadas (Amortecedor, Pastilha de Freio, Kit Embreagem, etc.)
+### Dados Reais (Supabase)
+- Multi-tenant com RLS
+- Schema completo com 7 tabelas
+- Autenticação real com Supabase Auth
+- RPC para dashboard otimizado
+
+### Dados Mockados (Fallback)
+- **35+ Leads** com atribuição completa (GCLID, FBCLID, UTMs)
+- **5 Campanhas** (Google Ads + Meta Ads)
+- **Conversões offline** com status de envio
+- **Time series** de 30 dias
+- **Interações WhatsApp** mockadas
+- **KPIs** realistas de performance
 
 ## 🎯 Pronto para Produção
 
-O front-end está 100% funcional e pronto para:
+O front-end está 100% funcional e integrado com Supabase:
 
-1. **Conectar API real** - Apenas substituir `services/api.ts`
-2. **Adicionar autenticação real** - JWT, OAuth, etc.
-3. **Implementar formulários** - Criar/editar leads, orçamentos
-4. **Expandir funcionalidades** - Relatórios, automações, IA real
+1. ✅ **Autenticação real** - Supabase Auth com sessões persistentes
+2. ✅ **Banco de dados** - PostgreSQL com RLS multi-tenant
+3. ✅ **Tipos TypeScript** - Gerados automaticamente do schema
+4. 🚧 **Próximos passos** - Sincronização com Google Ads API, webhooks WhatsApp
 
 ---
 

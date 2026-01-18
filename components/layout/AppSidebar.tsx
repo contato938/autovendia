@@ -1,6 +1,6 @@
 'use client';
 
-import { Settings, Trello, Users, BarChart3 } from "lucide-react"
+import { Settings, BarChart3, Users, Repeat, Cable, Megaphone } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -16,7 +16,6 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-// Menu items.
 const items = [
   {
     title: "Dashboard",
@@ -24,14 +23,24 @@ const items = [
     icon: BarChart3,
   },
   {
+    title: "Campanhas",
+    url: "/campaigns",
+    icon: Megaphone,
+  },
+  {
     title: "Leads",
     url: "/leads",
     icon: Users,
   },
   {
-    title: "Pipeline",
-    url: "/pipeline",
-    icon: Trello, // or Kanban icon if available
+    title: "Conversões",
+    url: "/conversions",
+    icon: Repeat,
+  },
+  {
+    title: "Integrações",
+    url: "/integrations",
+    icon: Cable,
   },
   {
     title: "Configurações",
@@ -47,7 +56,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="h-16 flex items-center justify-center border-b border-sidebar-border/50">
         <div className="flex items-center gap-2 font-bold text-xl text-primary px-4 w-full">
-           <span className="truncate">AUTOVEND IA</span>
+           <span className="truncate">AutovendaIA</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -71,7 +80,7 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter className="p-4 border-t border-sidebar-border/50">
         <div className="text-xs text-muted-foreground truncate">
-          v1.0.0 Alpha
+          v1.0.0 MVP
         </div>
       </SidebarFooter>
     </Sidebar>
