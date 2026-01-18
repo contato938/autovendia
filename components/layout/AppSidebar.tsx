@@ -1,6 +1,6 @@
 'use client';
 
-import { Settings, BarChart3, Users, Repeat, Cable, Megaphone } from "lucide-react"
+import { Settings, BarChart3, Users, Repeat, Cable, Megaphone, Kanban } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -12,7 +12,7 @@ import {
   SidebarMenuItem,
   SidebarHeader,
   SidebarFooter
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -33,6 +33,11 @@ const items = [
     icon: Users,
   },
   {
+    title: "Pipeline",
+    url: "/pipeline",
+    icon: Kanban,
+  },
+  {
     title: "Conversões",
     url: "/conversions",
     icon: Repeat,
@@ -47,7 +52,7 @@ const items = [
     url: "/settings",
     icon: Settings,
   },
-]
+];
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -56,7 +61,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="h-16 flex items-center justify-center border-b border-sidebar-border/50">
         <div className="flex items-center gap-2 font-bold text-xl text-primary px-4 w-full">
-           <span className="truncate">AutovendaIA</span>
+          <span className="truncate">AutovendaIA</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -66,7 +71,11 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={pathname.startsWith(item.url)} tooltip={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith(item.url)}
+                    tooltip={item.title}
+                  >
                     <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -84,5 +93,5 @@ export function AppSidebar() {
         </div>
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
