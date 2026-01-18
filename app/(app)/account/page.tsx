@@ -111,7 +111,7 @@ export default function AccountPage() {
             </CardContent>
           </Card>
 
-          <ProfileForm profile={profile} isLoading={isLoading} />
+          <ProfileForm profile={profile ?? null} isLoading={isLoading} />
         </TabsContent>
 
         <TabsContent value="security" className="space-y-6">
