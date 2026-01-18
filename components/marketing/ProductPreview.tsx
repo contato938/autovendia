@@ -4,7 +4,7 @@ import { Separator } from '@/components/ui/separator';
 
 export function ProductPreview() {
   return (
-    <section className="container py-12 md:py-24 space-y-8">
+    <section className="container mx-auto py-12 md:py-24 space-y-8">
       <div className="text-center space-y-4 max-w-2xl mx-auto">
         <h2 className="text-3xl font-bold tracking-tighter md:text-4xl text-primary">
           Visão do que importa

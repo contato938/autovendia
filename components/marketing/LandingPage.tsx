@@ -13,7 +13,7 @@ export function LandingPage() {
       
       <main>
         {/* Hero Section */}
-        <section className="container pt-20 pb-12 md:pt-32 md:pb-16 text-center space-y-8">
+        <section className="container mx-auto pt-20 pb-12 md:pt-32 md:pb-16 text-center space-y-8">
           <div className="space-y-4 max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-primary leading-tight">
               Pare de adivinhar. <br className="hidden md:block" />

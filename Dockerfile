@@ -22,6 +22,12 @@ COPY . .
 # Descomente a linha abaixo caso queira desabilitar a telemetria durante o build.
 # ENV NEXT_TELEMETRY_DISABLED=1
 
+# Variáveis públicas precisam estar disponíveis no build do Next.js
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
+
 RUN npm run build
 
 # Imagem de produção: copiar todos os arquivos e executar next
@@ -29,6 +35,9 @@ FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
+# Manter variáveis públicas no runtime também
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 # Descomente a linha abaixo para desabilitar a telemetria durante o runtime.
 # ENV NEXT_TELEMETRY_DISABLED=1
 

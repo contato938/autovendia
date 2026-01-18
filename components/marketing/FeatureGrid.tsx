@@ -15,7 +15,7 @@ export function FeatureGrid() {
   return (
     <div className="space-y-24 py-12 md:py-24">
       {/* Problema */}
-      <section className="container space-y-8">
+      <section className="container mx-auto space-y-8">
         <div className="text-center max-w-2xl mx-auto space-y-4">
           <Badge variant="secondary" className="bg-destructive/10 text-destructive hover:bg-destructive/20">O Problema</Badge>
           <h2 className="text-3xl font-bold text-primary">Por que você está perdendo dinheiro?</h2>
@@ -53,7 +53,7 @@ export function FeatureGrid() {
 
       {/* Solução */}
       <section className="bg-primary text-primary-foreground py-16 -mx-4 md:-mx-8 px-4 md:px-8">
-        <div className="container text-center space-y-6">
+        <div className="container mx-auto text-center space-y-6">
           <h2 className="text-3xl md:text-4xl font-bold">Feche o loop do clique à venda</h2>
           <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">
             Do anúncio ao WhatsApp, do WhatsApp à venda, da venda de volta ao Google Ads. 
@@ -63,7 +63,7 @@ export function FeatureGrid() {
       </section>
 
       {/* Como Funciona */}
-      <section id="como-funciona" className="container space-y-12">
+      <section id="como-funciona" className="container mx-auto space-y-12">
         <div className="text-center max-w-2xl mx-auto">
           <Badge variant="outline" className="border-primary text-primary mb-4">Passo a passo</Badge>
           <h2 className="text-3xl font-bold text-primary">Como funciona</h2>
@@ -88,7 +88,7 @@ export function FeatureGrid() {
       </section>
 
       {/* Recursos */}
-      <section id="recursos" className="container space-y-8">
+      <section id="recursos" className="container mx-auto space-y-8">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-primary mb-4">Tudo o que você precisa</h2>
         </div>
@@ -115,7 +115,7 @@ export function FeatureGrid() {
       </section>
 
       {/* Integrações */}
-      <section className="container bg-muted/50 rounded-3xl p-8 md:p-12 text-center space-y-8">
+      <section className="container mx-auto bg-muted/50 rounded-3xl p-8 md:p-12 text-center space-y-8">
         <h2 className="text-2xl font-bold">Integrações Nativas</h2>
         <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
           <div className="flex flex-col items-center gap-2">
@@ -146,7 +146,7 @@ export function FeatureGrid() {
       </section>
 
        {/* Security */}
-      <section className="container text-center space-y-6">
+      <section className="container mx-auto text-center space-y-6">
         <div className="flex justify-center">
             <ShieldCheck className="w-12 h-12 text-primary/50" />
         </div>

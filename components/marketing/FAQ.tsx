@@ -11,7 +11,7 @@ import Link from "next/link";
 
 export function FAQ() {
     return (
-      <section id="faq" className="container py-12 md:py-24 space-y-12">
+      <section id="faq" className="container mx-auto py-12 md:py-24 space-y-12">
         <div className="text-center space-y-4">
           <h2 className="text-3xl font-bold text-primary">Perguntas Frequentes</h2>
         </div>

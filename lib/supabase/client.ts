@@ -18,6 +18,23 @@ const createSupabaseClient = (): SupabaseClient<Database> => {
         data: null,
         error: new Error('Supabase env vars ausentes.'),
       }),
+      auth: {
+        getSession: async () => ({
+          data: { session: null },
+          error: new Error('Supabase env vars ausentes.'),
+        }),
+        onAuthStateChange: () => ({
+          data: { subscription: { unsubscribe: () => undefined } },
+          error: null,
+        }),
+        signInWithPassword: async () => ({
+          data: { session: null, user: null },
+          error: new Error('Supabase env vars ausentes.'),
+        }),
+        signOut: async () => ({
+          error: new Error('Supabase env vars ausentes.'),
+        }),
+      },
     } as unknown as SupabaseClient<Database>;
   }
 
