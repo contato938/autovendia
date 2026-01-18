@@ -38,7 +38,7 @@ export default function RootLayout({
 
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className={`${inter.variable} ${montserrat.variable} font-sans antialiased`} suppressHydrationWarning>
+      <head>
         <Script
           id="supabase-env"
           strategy="beforeInteractive"
@@ -46,6 +46,8 @@ export default function RootLayout({
             __html: `window.__SUPABASE_ENV__ = ${JSON.stringify(supabaseEnv)};`,
           }}
         />
+      </head>
+      <body className={`${inter.variable} ${montserrat.variable} font-sans antialiased`} suppressHydrationWarning>
         <QueryProvider>
           {children}
           <Toaster />

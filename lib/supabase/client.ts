@@ -27,41 +27,51 @@ const readSupabaseEnv = (): SupabaseEnv => {
   };
 };
 
-const createSupabaseClient = (): SupabaseClient<Database> => {
+const createStubClient = (): SupabaseClient<Database> => {
+  // Avoid crashing builds/prerender when env vars are not set.
+  console.warn(
+    'Supabase env vars ausentes. Configure NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY.'
+  );
+  return {
+    rpc: async () => ({
+      data: null,
+      error: new Error('Supabase env vars ausentes.'),
+    }),
+    auth: {
+      getSession: async () => ({
+        data: { session: null },
+        error: new Error('Supabase env vars ausentes.'),
+      }),
+      onAuthStateChange: () => ({
+        data: { subscription: { unsubscribe: () => undefined } },
+        error: null,
+      }),
+      signInWithPassword: async () => ({
+        data: { session: null, user: null },
+        error: new Error('Supabase env vars ausentes.'),
+      }),
+      signOut: async () => ({
+        error: new Error('Supabase env vars ausentes.'),
+      }),
+    },
+  } as unknown as SupabaseClient<Database>;
+};
+
+let supabaseClient: SupabaseClient<Database> | null = null;
+
+const getSupabaseClient = (): SupabaseClient<Database> => {
+  if (supabaseClient) {
+    return supabaseClient;
+  }
+
   const { url, anonKey } = readSupabaseEnv();
   const hasSupabaseEnv = Boolean(url && anonKey);
 
   if (!hasSupabaseEnv) {
-    // Avoid crashing builds/prerender when env vars are not set.
-    console.warn(
-      'Supabase env vars ausentes. Configure NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY.'
-    );
-    return {
-      rpc: async () => ({
-        data: null,
-        error: new Error('Supabase env vars ausentes.'),
-      }),
-      auth: {
-        getSession: async () => ({
-          data: { session: null },
-          error: new Error('Supabase env vars ausentes.'),
-        }),
-        onAuthStateChange: () => ({
-          data: { subscription: { unsubscribe: () => undefined } },
-          error: null,
-        }),
-        signInWithPassword: async () => ({
-          data: { session: null, user: null },
-          error: new Error('Supabase env vars ausentes.'),
-        }),
-        signOut: async () => ({
-          error: new Error('Supabase env vars ausentes.'),
-        }),
-      },
-    } as unknown as SupabaseClient<Database>;
+    return createStubClient();
   }
 
-  return createClient<Database>(url!, anonKey!, {
+  supabaseClient = createClient<Database>(url!, anonKey!, {
     auth: {
       persistSession: true,
       autoRefreshToken: true,
@@ -69,7 +79,14 @@ const createSupabaseClient = (): SupabaseClient<Database> => {
       storage: typeof window !== 'undefined' ? window.localStorage : undefined,
     },
   });
+
+  return supabaseClient;
 };
 
-// Create a single supabase client for interacting with your database
-export const supabase = createSupabaseClient();
+export const supabase = new Proxy({} as SupabaseClient<Database>, {
+  get(_target, prop) {
+    const client = getSupabaseClient();
+    const value = client[prop as keyof SupabaseClient<Database>];
+    return typeof value === 'function' ? value.bind(client) : value;
+  },
+});
