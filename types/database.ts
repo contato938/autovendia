@@ -323,6 +323,8 @@ export type Database = {
           created_at: string | null
           id: string
           nome: string
+          phone: string | null
+          company_name: string | null
           role: string
           tenant_id: string
           updated_at: string | null
@@ -332,6 +334,8 @@ export type Database = {
           created_at?: string | null
           id: string
           nome: string
+          phone?: string | null
+          company_name?: string | null
           role: string
           tenant_id: string
           updated_at?: string | null
@@ -341,6 +345,8 @@ export type Database = {
           created_at?: string | null
           id?: string
           nome?: string
+          phone?: string | null
+          company_name?: string | null
           role?: string
           tenant_id?: string
           updated_at?: string | null
