@@ -2,12 +2,35 @@ import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+type SupabaseEnv = {
+  url?: string;
+  anonKey?: string;
+};
 
-const hasSupabaseEnv = Boolean(supabaseUrl && supabaseAnonKey);
+declare global {
+  interface Window {
+    __SUPABASE_ENV__?: SupabaseEnv;
+  }
+}
+
+const readSupabaseEnv = (): SupabaseEnv => {
+  if (typeof window !== 'undefined') {
+    const runtimeEnv = window.__SUPABASE_ENV__;
+    if (runtimeEnv?.url && runtimeEnv?.anonKey) {
+      return runtimeEnv;
+    }
+  }
+
+  return {
+    url: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  };
+};
 
 const createSupabaseClient = (): SupabaseClient<Database> => {
+  const { url, anonKey } = readSupabaseEnv();
+  const hasSupabaseEnv = Boolean(url && anonKey);
+
   if (!hasSupabaseEnv) {
     // Avoid crashing builds/prerender when env vars are not set.
     console.warn(
@@ -38,7 +61,7 @@ const createSupabaseClient = (): SupabaseClient<Database> => {
     } as unknown as SupabaseClient<Database>;
   }
 
-  return createClient<Database>(supabaseUrl!, supabaseAnonKey!, {
+  return createClient<Database>(url!, anonKey!, {
     auth: {
       persistSession: true,
       autoRefreshToken: true,

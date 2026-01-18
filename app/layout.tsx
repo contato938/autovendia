@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/query-provider";
@@ -23,14 +24,28 @@ export const metadata: Metadata = {
   description: "SaaS de Automação de Vendas",
 };
 
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabaseEnv = {
+    url: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
+    anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+  };
+
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${inter.variable} ${montserrat.variable} font-sans antialiased`} suppressHydrationWarning>
+        <Script
+          id="supabase-env"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `window.__SUPABASE_ENV__ = ${JSON.stringify(supabaseEnv)};`,
+          }}
+        />
         <QueryProvider>
           {children}
           <Toaster />
