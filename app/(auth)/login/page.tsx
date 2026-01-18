@@ -1,21 +1,40 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('carlos@autovend.ia');
-  const [password, setPassword] = useState('123456');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
   const [error, setError] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (data.session) {
+          router.replace('/dashboard');
+        }
+      } catch (error) {
+        console.error('Error checking session:', error);
+      } finally {
+        setCheckingSession(false);
+      }
+    };
+
+    checkSession();
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,6 +67,14 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  if (checkingSession) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-primary via-secondary to-primary">
+        <Loader2 className="h-8 w-8 animate-spin text-white" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-primary via-secondary to-primary p-4">
@@ -87,6 +114,14 @@ export default function LoginPage() {
                 autoComplete="current-password"
               />
             </div>
+            <div className="flex justify-end">
+              <Link
+                href="/reset"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                Esqueci minha senha
+              </Link>
+            </div>
             {error && (
               <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
                 {error}
@@ -104,6 +139,15 @@ export default function LoginPage() {
             </Button>
           </form>
         </CardContent>
+        <CardFooter className="flex justify-center">
+          <Link 
+            href="/" 
+            className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Voltar para o site
+          </Link>
+        </CardFooter>
       </Card>
     </div>
   );
