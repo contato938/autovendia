@@ -1,4 +1,4 @@
-import { KpiCard } from './KpiCard';
+import { KpiCard } from './KPICard';
 import { DollarSign, MousePointerClick, MessageSquare, UserCheck, ShoppingCart, TrendingUp } from 'lucide-react';
 import type { Kpis, KpiDelta } from '@/types/googleAdsDashboard';
 
