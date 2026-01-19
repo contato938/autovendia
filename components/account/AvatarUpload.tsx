@@ -7,6 +7,7 @@ import { Upload, X } from 'lucide-react';
 import { accountService } from '@/services/account';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import { useStore } from '@/store/useStore';
 
 interface AvatarUploadProps {
   currentAvatarUrl?: string | null;
@@ -19,6 +20,7 @@ export function AvatarUpload({ currentAvatarUrl, userName, userId }: AvatarUploa
   const [previewUrl, setPreviewUrl] = useState<string | null>(currentAvatarUrl || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
+  const { user, setUser } = useStore();
 
   // Sincronizar previewUrl com currentAvatarUrl quando mudar
   useEffect(() => {
@@ -58,6 +60,11 @@ export function AvatarUpload({ currentAvatarUrl, userName, userId }: AvatarUploa
       // Atualizar perfil
       await accountService.updateProfile({ avatar_url: avatarUrl });
       
+      // Atualizar estado global
+      if (user) {
+        setUser({ ...user, avatarUrl });
+      }
+      
       // Invalidar cache
       queryClient.invalidateQueries({ queryKey: ['account', 'profile'] });
       
@@ -78,6 +85,11 @@ export function AvatarUpload({ currentAvatarUrl, userName, userId }: AvatarUploa
     try {
       await accountService.removeAvatar();
       setPreviewUrl(null);
+      
+      // Atualizar estado global
+      if (user) {
+        setUser({ ...user, avatarUrl: undefined });
+      }
       
       // Invalidar cache
       queryClient.invalidateQueries({ queryKey: ['account', 'profile'] });

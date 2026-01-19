@@ -9,6 +9,7 @@ import { accountService } from '@/services/account';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useStore } from '@/store/useStore';
 
 interface ProfileFormProps {
   profile: {
@@ -26,6 +27,7 @@ export function ProfileForm({ profile, isLoading }: ProfileFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const queryClient = useQueryClient();
+  const { user, setUser } = useStore();
 
   useEffect(() => {
     if (profile) {
@@ -51,6 +53,11 @@ export function ProfileForm({ profile, isLoading }: ProfileFormProps) {
         phone: phone.trim() || null,
         company_name: company_name.trim() || null,
       });
+
+      // Atualizar estado global
+      if (user) {
+        setUser({ ...user, nome: nome.trim() });
+      }
 
       // Invalidar cache
       queryClient.invalidateQueries({ queryKey: ['account', 'profile'] });

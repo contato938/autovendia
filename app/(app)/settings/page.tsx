@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Settings, Users, Webhook, Bell, Cable } from 'lucide-react';
 
 export default function SettingsPage() {
@@ -69,25 +68,27 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Cable className="h-5 w-5" />
-              Integrações
-            </CardTitle>
-            <CardDescription>
-              Conecte ferramentas e fontes de dados
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-sm text-muted-foreground">
-              Gerencie integrações com CRMs, mídia e canais externos.
-            </p>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/integrations">Abrir integrações</Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <Link
+          href="/integrations"
+          className="block rounded-xl focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        >
+          <Card className="transition hover:border-foreground/20 hover:shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Cable className="h-5 w-5" />
+                Integrações
+              </CardTitle>
+              <CardDescription>
+                Conecte ferramentas e fontes de dados
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Gerencie integrações com CRMs, mídia e canais externos.
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
 
         <Card>
           <CardHeader>
