@@ -18,7 +18,8 @@ import {
 import { supabase } from '@/lib/supabase/client';
 
 export function TopBar() {
-  const { user, setUser, tenants, selectedTenant, setSelectedTenantId } = useStore();
+  const { user, setUser, tenants, selectedTenantId, setSelectedTenantId } = useStore();
+  const selectedTenant = tenants.find(t => t.id === selectedTenantId) ?? null;
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -49,7 +50,7 @@ export function TopBar() {
                  <AvatarFallback>{selectedTenant?.nome?.charAt(0) || '!'}</AvatarFallback>
                </Avatar>
                <span className="truncate flex-1">
-                 {selectedTenant?.nome || 'Carregando...'}
+                 {selectedTenant?.nome || (tenants.length > 0 ? 'Selecione...' : 'Carregando...')}
                </span>
              </div>
              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

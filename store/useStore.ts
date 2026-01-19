@@ -10,7 +10,6 @@ interface StoreState {
   setTenants: (tenants: Tenant[]) => void;
   selectedTenantId: string | null;
   setSelectedTenantId: (tenantId: string) => void;
-  selectedTenant: Tenant | null;
   
   // UI State
   selectedLeadId: string | null;
@@ -31,10 +30,6 @@ export const useStore = create<StoreState>((set, get) => ({
   setTenants: (tenants) => set({ tenants }),
   selectedTenantId: null,
   setSelectedTenantId: (tenantId) => set({ selectedTenantId: tenantId }),
-  get selectedTenant() {
-    const state = get();
-    return state.tenants.find(t => t.id === state.selectedTenantId) || null;
-  },
   
   selectedLeadId: null,
   setSelectedLeadId: (id) => set({ selectedLeadId: id }),

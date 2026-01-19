@@ -16,21 +16,24 @@ export const dashboardGoogleService = {
       });
 
       if (error) {
-        console.warn('Dashboard RPC error, falling back to fixtures:', error);
-        return generateDashboardSummary();
+        console.error('Dashboard RPC error:', {
+          code: (error as any).code,
+          message: (error as any).message,
+          details: (error as any).details,
+          hint: (error as any).hint,
+        });
+        throw error;
       }
 
-      // Check if we have real data (campaigns array has items)
-      if (data && data.campaigns && Array.isArray(data.campaigns) && data.campaigns.length > 0) {
+      // Fallback para fixtures apenas quando o banco ainda não tem dados
+      if (data && (data as any).campaigns && Array.isArray((data as any).campaigns) && (data as any).campaigns.length > 0) {
         return data as DashboardSummary;
       }
 
-      // No data yet, use fixtures
-      console.log('No campaign data yet, using fixtures');
       return generateDashboardSummary();
     } catch (error) {
-      console.warn('Dashboard fetch error, falling back to fixtures:', error);
-      return generateDashboardSummary();
+      // Não mascarar erro de RPC; deixar o caller (React Query) lidar com estado de erro
+      throw error;
     }
   },
 };
