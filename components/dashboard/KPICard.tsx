@@ -1,18 +1,15 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LucideIcon } from 'lucide-react';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-interface KpiCardProps {
+interface KPICardProps {
   title: string;
   value: string | number;
   icon: LucideIcon;
-  delta?: number; // Percentual de mudança
+  trend?: string;
+  trendUp?: boolean;
 }
 
-export function KpiCard({ title, value, icon: Icon, delta }: KpiCardProps) {
-  const showDelta = delta !== undefined && delta !== 0;
-  const isPositive = delta && delta > 0;
-
+export function KPICard({ title, value, icon: Icon, trend, trendUp }: KPICardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -23,18 +20,10 @@ export function KpiCard({ title, value, icon: Icon, delta }: KpiCardProps) {
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
-        {showDelta && (
-          <div className="flex items-center gap-1 mt-1">
-            {isPositive ? (
-              <TrendingUp className="h-3 w-3 text-green-600" />
-            ) : (
-              <TrendingDown className="h-3 w-3 text-red-600" />
-            )}
-            <span className={`text-xs font-medium ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
-              {isPositive ? '+' : ''}{delta.toFixed(1)}%
-            </span>
-            <span className="text-xs text-muted-foreground">vs período anterior</span>
-          </div>
+        {trend && (
+          <p className={`text-xs ${trendUp ? 'text-green-600' : 'text-red-600'}`}>
+            {trend}
+          </p>
         )}
       </CardContent>
     </Card>
