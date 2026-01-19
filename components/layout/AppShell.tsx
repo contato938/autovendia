@@ -38,36 +38,39 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // Load user tenants with tenant details
+        // Load user's tenant associations first (without join to avoid RLS issues)
         const { data: userTenants, error: tenantsError } = await supabase
           .from('user_tenants')
-          .select(`
-            tenant_id,
-            role,
-            tenants (
-              id,
-              nome,
-              cnpj,
-              logo_url
-            )
-          `)
+          .select('tenant_id, role')
           .eq('user_id', session.user.id);
 
         if (tenantsError) {
-          console.error('Error loading tenants:', tenantsError);
+          console.error('Error loading user_tenants:', tenantsError);
         }
 
-        console.log('User tenants loaded:', userTenants);
+        console.log('User tenant associations loaded:', userTenants);
 
-        // Extract tenants from the join result
-        const tenantsList = (userTenants || [])
-          .filter(ut => ut.tenants)
-          .map(ut => ({
-            id: ut.tenants.id,
-            nome: ut.tenants.nome,
-            cnpj: ut.tenants.cnpj,
-            logoUrl: ut.tenants.logo_url || undefined,
-          }));
+        let tenantsList: Tenant[] = [];
+
+        // Load tenant details separately to avoid join RLS complexity
+        if (userTenants && userTenants.length > 0) {
+          const tenantIds = userTenants.map(ut => ut.tenant_id);
+          const { data: tenantsData, error: tenantsDataError } = await supabase
+            .from('tenants')
+            .select('id, nome, cnpj, logo_url')
+            .in('id', tenantIds);
+
+          if (tenantsDataError) {
+            console.error('Error loading tenants:', tenantsDataError);
+          } else {
+            tenantsList = (tenantsData || []).map(t => ({
+              id: t.id,
+              nome: t.nome,
+              cnpj: t.cnpj,
+              logoUrl: t.logo_url || undefined,
+            }));
+          }
+        }
 
         console.log('Tenants list processed:', tenantsList);
 
