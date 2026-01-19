@@ -7,7 +7,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from './AppSidebar';
 import { TopBar } from './TopBar';
 import { supabase } from '@/lib/supabase/client';
-import type { User } from '@/types';
+import type { User, Tenant } from '@/types';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, setUser, setTenants, setSelectedTenantId } = useStore();
