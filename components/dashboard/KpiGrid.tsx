@@ -8,55 +8,68 @@ interface KpiGridProps {
 }
 
 export function KpiGrid({ kpis, delta }: KpiGridProps) {
+  const formatTrend = (value: number) => {
+    const sign = value >= 0 ? '+' : '';
+    return `${sign}${value.toFixed(1)}%`;
+  };
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
       <KPICard
         title="Investimento"
         value={`R$ ${kpis.spend.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
         icon={DollarSign}
-        delta={delta.deltaPercent.spend}
+        trend={formatTrend(delta.deltaPercent.spend)}
+        trendUp={delta.deltaPercent.spend >= 0}
       />
       <KPICard
         title="Cliques"
         value={kpis.clicks.toLocaleString('pt-BR')}
         icon={MousePointerClick}
-        delta={delta.deltaPercent.clicks}
+        trend={formatTrend(delta.deltaPercent.clicks)}
+        trendUp={delta.deltaPercent.clicks >= 0}
       />
       <KPICard
         title="Conversas WhatsApp"
         value={kpis.whatsapp_started.toLocaleString('pt-BR')}
         icon={MessageSquare}
-        delta={delta.deltaPercent.whatsapp_started}
+        trend={formatTrend(delta.deltaPercent.whatsapp_started)}
+        trendUp={delta.deltaPercent.whatsapp_started >= 0}
       />
       <KPICard
         title="Leads Qualificados"
         value={kpis.qualified.toLocaleString('pt-BR')}
         icon={UserCheck}
-        delta={delta.deltaPercent.qualified}
+        trend={formatTrend(delta.deltaPercent.qualified)}
+        trendUp={delta.deltaPercent.qualified >= 0}
       />
       <KPICard
         title="Vendas"
         value={kpis.purchases.toLocaleString('pt-BR')}
         icon={ShoppingCart}
-        delta={delta.deltaPercent.purchases}
+        trend={formatTrend(delta.deltaPercent.purchases)}
+        trendUp={delta.deltaPercent.purchases >= 0}
       />
       <KPICard
         title="Receita"
         value={`R$ ${kpis.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
         icon={DollarSign}
-        delta={delta.deltaPercent.revenue}
+        trend={formatTrend(delta.deltaPercent.revenue)}
+        trendUp={delta.deltaPercent.revenue >= 0}
       />
       <KPICard
         title="CPC"
         value={`R$ ${kpis.cpc.toFixed(2)}`}
         icon={MousePointerClick}
-        delta={delta.deltaPercent.cpc}
+        trend={formatTrend(delta.deltaPercent.cpc)}
+        trendUp={delta.deltaPercent.cpc >= 0}
       />
       <KPICard
         title="ROAS"
         value={`${kpis.roas.toFixed(2)}x`}
         icon={TrendingUp}
-        delta={delta.deltaPercent.roas}
+        trend={formatTrend(delta.deltaPercent.roas)}
+        trendUp={delta.deltaPercent.roas >= 0}
       />
     </div>
   );
