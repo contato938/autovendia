@@ -57,6 +57,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           console.error('Error loading tenants:', tenantsError);
         }
 
+        console.log('User tenants loaded:', userTenants);
+
         // Extract tenants from the join result
         const tenantsList = (userTenants || [])
           .filter(ut => ut.tenants)
@@ -66,6 +68,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             cnpj: ut.tenants.cnpj,
             logoUrl: ut.tenants.logo_url || undefined,
           }));
+
+        console.log('Tenants list processed:', tenantsList);
 
         // Map to User type
         const userObj: User = {
@@ -80,12 +84,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         setUser(userObj);
         setTenants(tenantsList);
         
+        console.log('Setting tenants:', tenantsList);
+        console.log('Selected tenant will be:', tenantsList.length > 0 ? tenantsList[0].id : 'none');
+        
         // Set initial selected tenant - always ensure a tenant is selected
         if (tenantsList.length > 0) {
           // Select first tenant from user_tenants
           setSelectedTenantId(tenantsList[0].id);
+          console.log('Selected tenant set to:', tenantsList[0].id);
         } else if (profile.tenant_id) {
           // Fallback: load tenant directly from profile for backward compatibility
+          console.log('No user_tenants found, trying fallback to profile.tenant_id:', profile.tenant_id);
           const { data: fallbackTenant } = await supabase
             .from('tenants')
             .select('*')
@@ -101,13 +110,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             };
             setTenants([tenant]);
             setSelectedTenantId(tenant.id);
+            console.log('Fallback tenant loaded:', tenant);
           } else {
-            // No tenant found - user needs to create one
-            console.warn('User has no tenants associated');
+            console.warn('Fallback tenant not found for ID:', profile.tenant_id);
           }
         } else {
-          // No tenant at all - user needs to create one
-          console.warn('User has no tenants associated');
+          // No tenant at all - user needs admin assistance
+          console.error('User has no tenants associated. Profile:', profile);
         }
       } catch (err) {
         console.error('Auth error:', err);
@@ -151,6 +160,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               `)
               .eq('user_id', session.user.id);
 
+            console.log('Auth state change - user tenants:', userTenants);
+
             const tenantsList = (userTenants || [])
               .filter(ut => ut.tenants)
               .map(ut => ({
@@ -172,11 +183,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             setUser(userObj);
             setTenants(tenantsList);
             
+            console.log('Auth state change - setting tenants:', tenantsList);
+            
             // Always select a tenant when available
             if (tenantsList.length > 0) {
               setSelectedTenantId(tenantsList[0].id);
+              console.log('Auth state change - selected tenant:', tenantsList[0].id);
             } else if (profile.tenant_id) {
               // Fallback to profile tenant_id
+              console.log('Auth state change - fallback to profile tenant:', profile.tenant_id);
               const { data: fallbackTenant } = await supabase
                 .from('tenants')
                 .select('*')
@@ -192,6 +207,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 };
                 setTenants([tenant]);
                 setSelectedTenantId(tenant.id);
+                console.log('Auth state change - fallback tenant loaded:', tenant);
               }
             }
           }

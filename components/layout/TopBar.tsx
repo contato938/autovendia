@@ -49,7 +49,7 @@ export function TopBar() {
                  <AvatarFallback>{selectedTenant?.nome?.charAt(0) || '!'}</AvatarFallback>
                </Avatar>
                <span className="truncate flex-1">
-                 {selectedTenant?.nome || 'Adicione uma organização'}
+                 {selectedTenant?.nome || 'Carregando...'}
                </span>
              </div>
              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -67,20 +67,11 @@ export function TopBar() {
               </DropdownMenuItem>
             ))
           ) : (
-            <>
-              <div className="px-2 py-3 text-sm text-muted-foreground text-center">
-                Você ainda não possui<br />organizações cadastradas
-              </div>
-              <DropdownMenuSeparator />
-            </>
+            <div className="px-2 py-3 text-sm text-muted-foreground text-center">
+              Nenhuma organização disponível.<br />
+              Contate o administrador.
+            </div>
           )}
-          {tenants.length > 0 && <DropdownMenuSeparator />}
-          <DropdownMenuItem 
-            onClick={() => router.push('/organizations/new')}
-            className={tenants.length === 0 ? 'font-semibold bg-accent' : ''}
-          >
-            Adicionar empresa...
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
