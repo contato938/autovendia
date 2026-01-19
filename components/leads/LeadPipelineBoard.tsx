@@ -51,14 +51,15 @@ function leadSortKey(lead: Lead) {
 
 export function LeadPipelineBoard() {
   const queryClient = useQueryClient();
-  const { openLeadDrawer } = useStore();
+  const { openLeadDrawer, selectedTenantId } = useStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [board, setBoard] = useState<BoardState>(emptyBoard);
 
   const { data: leads = [], isLoading, isError } = useQuery({
-    queryKey: ['leads'],
-    queryFn: leadsService.listLeads,
+    queryKey: ['leads', selectedTenantId],
+    queryFn: () => leadsService.listLeads(selectedTenantId || undefined),
+    enabled: !!selectedTenantId,
   });
 
   const leadById = useMemo(() => {
@@ -82,12 +83,12 @@ export function LeadPipelineBoard() {
     mutationFn: ({ id, stage }: { id: string; stage: LeadStage }) =>
       leadsService.updateLeadStage(id, stage),
     onMutate: async ({ id, stage }) => {
-      await queryClient.cancelQueries({ queryKey: ['leads'] });
-      const previous = queryClient.getQueryData<Lead[]>(['leads']);
+      await queryClient.cancelQueries({ queryKey: ['leads', selectedTenantId] });
+      const previous = queryClient.getQueryData<Lead[]>(['leads', selectedTenantId]);
 
       if (previous) {
         queryClient.setQueryData<Lead[]>(
-          ['leads'],
+          ['leads', selectedTenantId],
           previous.map((l) => (l.id === id ? { ...l, stage } : l))
         );
       }
@@ -96,7 +97,7 @@ export function LeadPipelineBoard() {
     },
     onError: (_err, _vars, ctx) => {
       if (ctx?.previous) {
-        queryClient.setQueryData(['leads'], ctx.previous);
+        queryClient.setQueryData(['leads', selectedTenantId], ctx.previous);
       }
       toast.error('Falha ao atualizar etapa. Reverti a mudança.');
     },
@@ -104,7 +105,7 @@ export function LeadPipelineBoard() {
       toast.success('Etapa atualizada!');
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['leads'] });
+      queryClient.invalidateQueries({ queryKey: ['leads', selectedTenantId] });
     },
   });
 
@@ -270,7 +271,7 @@ export function LeadPipelineBoard() {
             />
           </div>
           <div className="mt-2 text-xs text-muted-foreground">
-            Dica: arraste pelo ícone do card para não disparar o drawer sem querer
+            Dica: Arraste o card pelo ícone lateral para movê-lo sem abrir os detalhes
           </div>
         </CardContent>
       </Card>

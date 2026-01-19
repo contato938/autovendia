@@ -26,14 +26,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CampaignStatus } from '@/types';
+import { useStore } from '@/store/useStore';
 
 export default function CampaignsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<CampaignStatus | 'all'>('all');
+  const { selectedTenantId } = useStore();
 
   const { data: campaigns = [], isLoading } = useQuery({
-    queryKey: ['campaigns'],
-    queryFn: campaignsService.listCampaigns,
+    queryKey: ['campaigns', selectedTenantId],
+    queryFn: () => campaignsService.listCampaigns(selectedTenantId || undefined),
+    enabled: !!selectedTenantId,
   });
 
   // Filter campaigns

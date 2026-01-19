@@ -18,7 +18,7 @@ import {
 import { supabase } from '@/lib/supabase/client';
 
 export function TopBar() {
-  const { user, setUser } = useStore();
+  const { user, setUser, tenants, selectedTenant, setSelectedTenantId } = useStore();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -32,23 +32,38 @@ export function TopBar() {
       <SidebarTrigger />
       <Separator orientation="vertical" className="h-6" />
       
-      {/* Tenant Selector Mock */}
+      {/* Tenant Selector */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="w-[200px] justify-between hidden md:flex">
              <div className="flex items-center gap-2">
                <Avatar className="h-5 w-5 rounded-md">
-                 <AvatarFallback>A</AvatarFallback>
+                 {selectedTenant?.logoUrl ? (
+                   <AvatarImage src={selectedTenant.logoUrl} alt={selectedTenant.nome} />
+                 ) : null}
+                 <AvatarFallback>{selectedTenant?.nome?.charAt(0) || 'A'}</AvatarFallback>
                </Avatar>
-               <span className="truncate">AutovendaIA</span>
+               <span className="truncate">{selectedTenant?.nome || 'Selecione uma organização'}</span>
              </div>
              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-[200px]">
-          <DropdownMenuItem>
-             <span className="font-medium text-sm">AutovendaIA</span>
-          </DropdownMenuItem>
+          {tenants.length > 0 ? (
+            tenants.map((tenant) => (
+              <DropdownMenuItem 
+                key={tenant.id}
+                onClick={() => setSelectedTenantId(tenant.id)}
+                className={selectedTenant?.id === tenant.id ? 'bg-accent' : ''}
+              >
+                <span className="font-medium text-sm">{tenant.nome}</span>
+              </DropdownMenuItem>
+            ))
+          ) : (
+            <DropdownMenuItem disabled>
+              Nenhuma organização disponível
+            </DropdownMenuItem>
+          )}
           <DropdownMenuSeparator />
           <DropdownMenuItem disabled>Adicionar empresa...</DropdownMenuItem>
         </DropdownMenuContent>

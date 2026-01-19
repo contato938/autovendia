@@ -3,11 +3,16 @@ import { supabase } from '@/lib/supabase/client';
 import { generateDashboardSummary } from '@/fixtures/dashboardGoogle';
 
 export const dashboardGoogleService = {
-  getDashboardSummary: async (filters: DashboardFilters): Promise<DashboardSummary> => {
+  getDashboardSummary: async (filters: DashboardFilters, tenantId?: string): Promise<DashboardSummary> => {
     try {
+      // Add tenant_id to filters if provided
+      const filtersWithTenant = tenantId 
+        ? { ...filters, tenant_id: tenantId }
+        : filters;
+      
       // Try to fetch from Supabase RPC
       const { data, error } = await supabase.rpc('dashboard_google_summary', {
-        filters: filters as any,
+        filters: filtersWithTenant as any,
       });
 
       if (error) {

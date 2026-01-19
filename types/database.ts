@@ -320,33 +320,33 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          company_name: string | null
           created_at: string | null
           id: string
           nome: string
           phone: string | null
-          company_name: string | null
           role: string
           tenant_id: string
           updated_at: string | null
         }
         Insert: {
           avatar_url?: string | null
+          company_name?: string | null
           created_at?: string | null
           id: string
           nome: string
           phone?: string | null
-          company_name?: string | null
           role: string
           tenant_id: string
           updated_at?: string | null
         }
         Update: {
           avatar_url?: string | null
+          company_name?: string | null
           created_at?: string | null
           id?: string
           nome?: string
           phone?: string | null
-          company_name?: string | null
           role?: string
           tenant_id?: string
           updated_at?: string | null
@@ -387,6 +387,41 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      user_tenants: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: string
+          tenant_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role?: string
+          tenant_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: string
+          tenant_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_tenants_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

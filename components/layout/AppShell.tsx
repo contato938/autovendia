@@ -10,7 +10,7 @@ import { supabase } from '@/lib/supabase/client';
 import type { User } from '@/types';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { user, setUser } = useStore();
+  const { user, setUser, setTenants, setSelectedTenantId } = useStore();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 
@@ -28,7 +28,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         // Load profile from database
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
-          .select('*, tenants(*)')
+          .select('*')
           .eq('id', session.user.id)
           .single();
 
@@ -38,17 +38,70 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           return;
         }
 
+        // Load user tenants with tenant details
+        const { data: userTenants, error: tenantsError } = await supabase
+          .from('user_tenants')
+          .select(`
+            tenant_id,
+            role,
+            tenants (
+              id,
+              nome,
+              cnpj,
+              logo_url
+            )
+          `)
+          .eq('user_id', session.user.id);
+
+        if (tenantsError) {
+          console.error('Error loading tenants:', tenantsError);
+        }
+
+        // Extract tenants from the join result
+        const tenantsList = (userTenants || [])
+          .filter(ut => ut.tenants)
+          .map(ut => ({
+            id: ut.tenants.id,
+            nome: ut.tenants.nome,
+            cnpj: ut.tenants.cnpj,
+            logoUrl: ut.tenants.logo_url || undefined,
+          }));
+
         // Map to User type
         const userObj: User = {
           id: profile.id,
           nome: profile.nome,
           email: session.user.email || '',
           role: profile.role as 'admin' | 'gestor' | 'vendedor',
-          tenantId: profile.tenant_id,
+          tenantId: tenantsList.length > 0 ? tenantsList[0].id : profile.tenant_id,
           avatarUrl: profile.avatar_url || undefined,
         };
 
         setUser(userObj);
+        setTenants(tenantsList);
+        
+        // Set initial selected tenant to first one or fallback to profile tenant_id
+        if (tenantsList.length > 0) {
+          setSelectedTenantId(tenantsList[0].id);
+        } else if (profile.tenant_id) {
+          // Fallback: load tenant directly from profile for backward compatibility
+          const { data: fallbackTenant } = await supabase
+            .from('tenants')
+            .select('*')
+            .eq('id', profile.tenant_id)
+            .single();
+          
+          if (fallbackTenant) {
+            const tenant = {
+              id: fallbackTenant.id,
+              nome: fallbackTenant.nome,
+              cnpj: fallbackTenant.cnpj,
+              logoUrl: fallbackTenant.logo_url || undefined,
+            };
+            setTenants([tenant]);
+            setSelectedTenantId(tenant.id);
+          }
+        }
       } catch (err) {
         console.error('Auth error:', err);
         router.push('/login');
@@ -64,9 +117,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       async (event, session) => {
         if (event === 'SIGNED_OUT' || !session) {
           setUser(null);
+          setTenants([]);
+          setSelectedTenantId('');
           router.push('/login');
         } else if (event === 'SIGNED_IN' && session) {
-          // Reload profile on sign in
+          // Reload profile and tenants on sign in
           const { data: profile } = await supabase
             .from('profiles')
             .select('*')
@@ -74,15 +129,44 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             .single();
 
           if (profile) {
+            // Load user tenants
+            const { data: userTenants } = await supabase
+              .from('user_tenants')
+              .select(`
+                tenant_id,
+                role,
+                tenants (
+                  id,
+                  nome,
+                  cnpj,
+                  logo_url
+                )
+              `)
+              .eq('user_id', session.user.id);
+
+            const tenantsList = (userTenants || [])
+              .filter(ut => ut.tenants)
+              .map(ut => ({
+                id: ut.tenants.id,
+                nome: ut.tenants.nome,
+                cnpj: ut.tenants.cnpj,
+                logoUrl: ut.tenants.logo_url || undefined,
+              }));
+
             const userObj: User = {
               id: profile.id,
               nome: profile.nome,
               email: session.user.email || '',
               role: profile.role as 'admin' | 'gestor' | 'vendedor',
-              tenantId: profile.tenant_id,
+              tenantId: tenantsList.length > 0 ? tenantsList[0].id : profile.tenant_id,
               avatarUrl: profile.avatar_url || undefined,
             };
+            
             setUser(userObj);
+            setTenants(tenantsList);
+            if (tenantsList.length > 0) {
+              setSelectedTenantId(tenantsList[0].id);
+            }
           }
         }
       }

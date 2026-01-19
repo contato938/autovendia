@@ -33,11 +33,17 @@ function mapDbLeadToLead(dbLead: any): Lead {
 }
 
 export const leadsService = {
-  listLeads: async (): Promise<Lead[]> => {
-    const { data, error } = await supabase
+  listLeads: async (tenantId?: string): Promise<Lead[]> => {
+    let query = supabase
       .from('leads')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('*');
+    
+    // Filter by tenant if provided
+    if (tenantId) {
+      query = query.eq('tenant_id', tenantId);
+    }
+    
+    const { data, error } = await query.order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching leads:', error);

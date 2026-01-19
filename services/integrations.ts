@@ -2,11 +2,17 @@ import { IntegrationStatus } from '@/types';
 import { supabase } from '@/lib/supabase/client';
 
 export const integrationsService = {
-  getStatus: async (): Promise<IntegrationStatus[]> => {
-    const { data, error } = await supabase
+  getStatus: async (tenantId?: string): Promise<IntegrationStatus[]> => {
+    let query = supabase
       .from('integrations')
-      .select('*')
-      .order('platform');
+      .select('*');
+    
+    // Filter by tenant if provided
+    if (tenantId) {
+      query = query.eq('tenant_id', tenantId);
+    }
+    
+    const { data, error } = await query.order('platform');
 
     if (error) {
       console.error('Error fetching integrations:', error);

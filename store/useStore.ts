@@ -1,9 +1,16 @@
 import { create } from 'zustand';
-import { User } from '@/types';
+import { User, Tenant } from '@/types';
 
 interface StoreState {
   user: User | null;
   setUser: (user: User | null) => void;
+  
+  // Tenant management
+  tenants: Tenant[];
+  setTenants: (tenants: Tenant[]) => void;
+  selectedTenantId: string | null;
+  setSelectedTenantId: (tenantId: string) => void;
+  selectedTenant: Tenant | null;
   
   // UI State
   selectedLeadId: string | null;
@@ -16,9 +23,18 @@ interface StoreState {
   closeLeadDrawer: () => void;
 }
 
-export const useStore = create<StoreState>((set) => ({
+export const useStore = create<StoreState>((set, get) => ({
   user: null, // Initially null
   setUser: (user) => set({ user }),
+  
+  tenants: [],
+  setTenants: (tenants) => set({ tenants }),
+  selectedTenantId: null,
+  setSelectedTenantId: (tenantId) => set({ selectedTenantId: tenantId }),
+  get selectedTenant() {
+    const state = get();
+    return state.tenants.find(t => t.id === state.selectedTenantId) || null;
+  },
   
   selectedLeadId: null,
   setSelectedLeadId: (id) => set({ selectedLeadId: id }),

@@ -19,13 +19,16 @@ import { ptBR } from 'date-fns/locale';
 import { RefreshCw, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useStore } from '@/store/useStore';
 
 export default function ConversionsPage() {
   const queryClient = useQueryClient();
+  const { selectedTenantId } = useStore();
 
   const { data: conversions = [], isLoading } = useQuery({
-    queryKey: ['conversions'],
-    queryFn: conversionsService.listConversions,
+    queryKey: ['conversions', selectedTenantId],
+    queryFn: () => conversionsService.listConversions(selectedTenantId || undefined),
+    enabled: !!selectedTenantId,
   });
 
   const retryMutation = useMutation({

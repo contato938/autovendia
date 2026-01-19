@@ -18,11 +18,17 @@ function mapDbCampaignToCampaign(dbCampaign: any): Campaign {
 }
 
 export const campaignsService = {
-  listCampaigns: async (): Promise<Campaign[]> => {
-    const { data, error } = await supabase
+  listCampaigns: async (tenantId?: string): Promise<Campaign[]> => {
+    let query = supabase
       .from('campaigns')
-      .select('*')
-      .order('spend', { ascending: false });
+      .select('*');
+    
+    // Filter by tenant if provided
+    if (tenantId) {
+      query = query.eq('tenant_id', tenantId);
+    }
+    
+    const { data, error } = await query.order('spend', { ascending: false });
 
     if (error) {
       console.error('Error fetching campaigns:', error);

@@ -32,11 +32,12 @@ import { LeadStage } from '@/types';
 export default function LeadsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [stageFilter, setStageFilter] = useState<LeadStage | 'all'>('all');
-  const { openLeadDrawer } = useStore();
+  const { openLeadDrawer, selectedTenantId } = useStore();
 
   const { data: leads = [], isLoading } = useQuery({
-    queryKey: ['leads'],
-    queryFn: leadsService.listLeads,
+    queryKey: ['leads', selectedTenantId],
+    queryFn: () => leadsService.listLeads(selectedTenantId || undefined),
+    enabled: !!selectedTenantId,
   });
 
   // Filter leads

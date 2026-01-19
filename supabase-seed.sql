@@ -2,20 +2,35 @@
 -- Execute no SQL Editor do Supabase Dashboard
 
 -- ========================================
+-- 0. SEED TENANT: GARCIA AUTO PEÇAS
+-- ========================================
+INSERT INTO public.tenants (id, nome, cnpj, logo_url)
+VALUES (
+  '11111111-1111-1111-1111-111111111111',
+  'Garcia Auto Peças',
+  '12.345.678/0001-90',
+  NULL
+)
+ON CONFLICT (id) DO UPDATE
+SET nome = EXCLUDED.nome,
+    cnpj = EXCLUDED.cnpj,
+    updated_at = now();
+
+-- ========================================
 -- 1. CAMPANHAS DE EXEMPLO
 -- ========================================
 INSERT INTO public.campaigns (tenant_id, platform, name, status, spend, leads, purchases, revenue, roas)
 VALUES 
-  ('00000000-0000-0000-0000-000000000001', 'google', 'Google Search - Peças Automotivas SP', 'active', 5234.50, 87, 12, 24680.00, 4.71),
-  ('00000000-0000-0000-0000-000000000001', 'google', 'Google Search - Freios e Suspensão', 'active', 3890.20, 65, 9, 18450.00, 4.74),
-  ('00000000-0000-0000-0000-000000000001', 'google', 'Google Search - Amortecedores', 'active', 3245.80, 54, 8, 16320.00, 5.03),
-  ('00000000-0000-0000-0000-000000000001', 'google', 'Google Display - Manutenção Veículos', 'active', 2145.80, 42, 5, 9820.00, 4.58),
-  ('00000000-0000-0000-0000-000000000001', 'google', 'Google Shopping - Kit Embreagem', 'active', 1989.50, 35, 6, 12450.00, 6.26),
-  ('00000000-0000-0000-0000-000000000001', 'google', 'Google Performance Max - Auto Peças', 'active', 4567.30, 72, 11, 22340.00, 4.89),
-  ('00000000-0000-0000-0000-000000000001', 'google', 'Google Search - Filtros e Óleos', 'active', 1678.90, 28, 4, 7850.00, 4.68),
-  ('00000000-0000-0000-0000-000000000001', 'google', 'Google Display - Pneus e Alinhamento', 'paused', 1234.50, 21, 2, 4560.00, 3.69),
-  ('00000000-0000-0000-0000-000000000001', 'google', 'Google Search - Baterias Automotivas', 'active', 2890.70, 48, 7, 14670.00, 5.08),
-  ('00000000-0000-0000-0000-000000000001', 'google', 'Google Shopping - Pastilhas de Freio', 'active', 1567.30, 28, 3, 6240.00, 3.98)
+  ('11111111-1111-1111-1111-111111111111', 'google', 'Google Search - Peças Automotivas SP', 'active', 5234.50, 87, 12, 24680.00, 4.71),
+  ('11111111-1111-1111-1111-111111111111', 'google', 'Google Search - Freios e Suspensão', 'active', 3890.20, 65, 9, 18450.00, 4.74),
+  ('11111111-1111-1111-1111-111111111111', 'google', 'Google Search - Amortecedores', 'active', 3245.80, 54, 8, 16320.00, 5.03),
+  ('11111111-1111-1111-1111-111111111111', 'google', 'Google Display - Manutenção Veículos', 'active', 2145.80, 42, 5, 9820.00, 4.58),
+  ('11111111-1111-1111-1111-111111111111', 'google', 'Google Shopping - Kit Embreagem', 'active', 1989.50, 35, 6, 12450.00, 6.26),
+  ('11111111-1111-1111-1111-111111111111', 'google', 'Google Performance Max - Auto Peças', 'active', 4567.30, 72, 11, 22340.00, 4.89),
+  ('11111111-1111-1111-1111-111111111111', 'google', 'Google Search - Filtros e Óleos', 'active', 1678.90, 28, 4, 7850.00, 4.68),
+  ('11111111-1111-1111-1111-111111111111', 'google', 'Google Display - Pneus e Alinhamento', 'paused', 1234.50, 21, 2, 4560.00, 3.69),
+  ('11111111-1111-1111-1111-111111111111', 'google', 'Google Search - Baterias Automotivas', 'active', 2890.70, 48, 7, 14670.00, 5.08),
+  ('11111111-1111-1111-1111-111111111111', 'google', 'Google Shopping - Pastilhas de Freio', 'active', 1567.30, 28, 3, 6240.00, 3.98)
 ON CONFLICT DO NOTHING;
 
 -- ========================================
@@ -30,7 +45,7 @@ DECLARE
 BEGIN
   FOR campaign_record IN 
     SELECT id, name FROM public.campaigns 
-    WHERE tenant_id = '00000000-0000-0000-0000-000000000001'
+    WHERE tenant_id = '11111111-1111-1111-1111-111111111111'
     ORDER BY RANDOM()
     LIMIT 10
   LOOP
@@ -51,7 +66,7 @@ BEGIN
         last_message_at
       )
       VALUES (
-        '00000000-0000-0000-0000-000000000001',
+        '11111111-1111-1111-1111-111111111111',
         campaign_record.id,
         'Lead ' || campaign_record.name || ' #' || i,
         '+5511' || LPAD(((90000000 + (RANDOM() * 9999999)::int))::text, 8, '0'),
@@ -97,7 +112,7 @@ SET
   sale_status = 'won',
   updated_at = NOW()
 WHERE stage = 'Vendido'
-  AND tenant_id = '00000000-0000-0000-0000-000000000001';
+  AND tenant_id = '11111111-1111-1111-1111-111111111111';
 
 -- ========================================
 -- 4. CONVERSÕES OFFLINE
@@ -134,7 +149,7 @@ SELECT
 FROM public.leads
 WHERE stage = 'Vendido'
   AND sale_value IS NOT NULL
-  AND tenant_id = '00000000-0000-0000-0000-000000000001';
+  AND tenant_id = '11111111-1111-1111-1111-111111111111';
 
 -- Adicionar algumas conversões com erro
 UPDATE public.offline_conversions
@@ -142,7 +157,7 @@ SET
   error_message = 'Error: Invalid GCLID format',
   status = 'failed'
 WHERE status = 'failed'
-  AND tenant_id = '00000000-0000-0000-0000-000000000001';
+  AND tenant_id = '11111111-1111-1111-1111-111111111111';
 
 -- ========================================
 -- 5. VERIFICAÇÃO FINAL
@@ -152,30 +167,30 @@ SELECT
   'Campanhas' as tabela, 
   COUNT(*) as total 
 FROM public.campaigns 
-WHERE tenant_id = '00000000-0000-0000-0000-000000000001'
+WHERE tenant_id = '11111111-1111-1111-1111-111111111111'
 UNION ALL
 SELECT 
   'Leads', 
   COUNT(*) 
 FROM public.leads 
-WHERE tenant_id = '00000000-0000-0000-0000-000000000001'
+WHERE tenant_id = '11111111-1111-1111-1111-111111111111'
 UNION ALL
 SELECT 
   'Interações', 
   COUNT(*) 
 FROM public.lead_interactions li
 JOIN public.leads l ON li.lead_id = l.id
-WHERE l.tenant_id = '00000000-0000-0000-0000-000000000001'
+WHERE l.tenant_id = '11111111-1111-1111-1111-111111111111'
 UNION ALL
 SELECT 
   'Conversões', 
   COUNT(*) 
 FROM public.offline_conversions 
-WHERE tenant_id = '00000000-0000-0000-0000-000000000001'
+WHERE tenant_id = '11111111-1111-1111-1111-111111111111'
 UNION ALL
 SELECT 
   'Leads Vendidos', 
   COUNT(*) 
 FROM public.leads 
 WHERE stage = 'Vendido' 
-  AND tenant_id = '00000000-0000-0000-0000-000000000001';
+  AND tenant_id = '11111111-1111-1111-1111-111111111111';

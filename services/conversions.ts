@@ -18,11 +18,17 @@ function mapDbConversion(dbConv: any): OfflineConversion {
 }
 
 export const conversionsService = {
-  listConversions: async (): Promise<OfflineConversion[]> => {
-    const { data, error } = await supabase
+  listConversions: async (tenantId?: string): Promise<OfflineConversion[]> => {
+    let query = supabase
       .from('offline_conversions')
-      .select('*')
-      .order('happened_at', { ascending: false });
+      .select('*');
+    
+    // Filter by tenant if provided
+    if (tenantId) {
+      query = query.eq('tenant_id', tenantId);
+    }
+    
+    const { data, error } = await query.order('happened_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching conversions:', error);

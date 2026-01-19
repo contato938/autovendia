@@ -9,11 +9,15 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { CheckCircle2, XCircle, Cable } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useStore } from '@/store/useStore';
 
 export default function IntegrationsPage() {
+  const { selectedTenantId } = useStore();
+  
   const { data: integrations = [], isLoading } = useQuery({
-    queryKey: ['integrations'],
-    queryFn: integrationsService.getStatus,
+    queryKey: ['integrations', selectedTenantId],
+    queryFn: () => integrationsService.getStatus(selectedTenantId || undefined),
+    enabled: !!selectedTenantId,
   });
 
   const platformNames: Record<string, string> = {

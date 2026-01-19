@@ -14,19 +14,22 @@ import { FunnelCard } from './FunnelCard';
 import { OpsHealthCard } from './OpsHealthCard';
 import { OfflineConversionsCard } from './OfflineConversionsCard';
 import type { DashboardFilters as FilterType, CampaignRow } from '@/types/googleAdsDashboard';
+import { useStore } from '@/store/useStore';
 
 export function DashboardGoogleClient() {
   const [filters, setFilters] = useState<FilterType>({
     dateRange: { preset: '30d' },
   });
+  const { selectedTenantId } = useStore();
 
   const [selectedCampaign, setSelectedCampaign] = useState<CampaignRow | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const { data: summary, isLoading, refetch } = useQuery({
-    queryKey: ['dashboardGoogle', filters],
-    queryFn: () => dashboardGoogleService.getDashboardSummary(filters),
+    queryKey: ['dashboardGoogle', filters, selectedTenantId],
+    queryFn: () => dashboardGoogleService.getDashboardSummary(filters, selectedTenantId || undefined),
     staleTime: 60 * 1000, // 60s
+    enabled: !!selectedTenantId,
   });
 
   const handleCampaignClick = (campaign: CampaignRow) => {
