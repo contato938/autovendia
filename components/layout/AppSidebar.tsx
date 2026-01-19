@@ -1,6 +1,6 @@
 'use client';
 
-import { Settings, BarChart3, Users, Repeat, Cable, Megaphone, Kanban, User } from "lucide-react";
+import { Settings, BarChart3, Users, Repeat, Megaphone, Kanban, User } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -10,9 +10,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   SidebarHeader,
   SidebarFooter
 } from "@/components/ui/sidebar";
@@ -46,21 +43,9 @@ const items = [
     icon: Repeat,
   },
   {
-    title: "Conta",
-    url: "/account",
-    icon: User,
-  },
-  {
     title: "Configurações",
     url: "/settings",
     icon: Settings,
-    items: [
-      {
-        title: "Integrações",
-        url: "/integrations",
-        icon: Cable,
-      },
-    ],
   },
 ];
 
@@ -79,16 +64,11 @@ export function AppSidebar() {
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => {
-                const isActive =
-                  pathname.startsWith(item.url) ||
-                  item.items?.some((subItem) => pathname.startsWith(subItem.url));
-
-                return (
+              {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={isActive}
+                    isActive={pathname.startsWith(item.url)}
                     tooltip={item.title}
                   >
                     <Link href={item.url}>
@@ -96,25 +76,8 @@ export function AppSidebar() {
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
-                  {item.items && (
-                    <SidebarMenuSub>
-                      {item.items.map((subItem) => (
-                        <SidebarMenuSubItem key={subItem.title}>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={pathname.startsWith(subItem.url)}
-                          >
-                            <Link href={subItem.url}>
-                              <span>{subItem.title}</span>
-                            </Link>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      ))}
-                    </SidebarMenuSub>
-                  )}
                 </SidebarMenuItem>
-                );
-              })}
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

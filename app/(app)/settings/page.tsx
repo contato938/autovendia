@@ -1,7 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Settings, Users, Webhook, Bell } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Settings, Users, Webhook, Bell, Cable } from 'lucide-react';
 
 export default function SettingsPage() {
   return (
@@ -64,6 +66,26 @@ export default function SettingsPage() {
             <p className="text-sm text-muted-foreground">
               Em breve: Receba notificações em tempo real de novos leads, vendas e conversões.
             </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Cable className="h-5 w-5" />
+              Integrações
+            </CardTitle>
+            <CardDescription>
+              Conecte ferramentas e fontes de dados
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Gerencie integrações com CRMs, mídia e canais externos.
+            </p>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/integrations">Abrir integrações</Link>
+            </Button>
           </CardContent>
         </Card>
 
