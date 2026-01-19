@@ -35,15 +35,22 @@ export function TopBar() {
       {/* Tenant Selector */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="w-[200px] justify-between hidden md:flex">
-             <div className="flex items-center gap-2">
-               <Avatar className="h-5 w-5 rounded-md">
+          <Button 
+            variant="outline" 
+            className={`max-w-[200px] min-w-[200px] justify-between hidden md:flex ${
+              !selectedTenant ? 'border-amber-500 text-amber-600' : ''
+            }`}
+          >
+             <div className="flex items-center gap-2 min-w-0 flex-1">
+               <Avatar className="h-5 w-5 rounded-md shrink-0">
                  {selectedTenant?.logoUrl ? (
                    <AvatarImage src={selectedTenant.logoUrl} alt={selectedTenant.nome} />
                  ) : null}
-                 <AvatarFallback>{selectedTenant?.nome?.charAt(0) || 'A'}</AvatarFallback>
+                 <AvatarFallback>{selectedTenant?.nome?.charAt(0) || '!'}</AvatarFallback>
                </Avatar>
-               <span className="truncate">{selectedTenant?.nome || 'Selecione uma organização'}</span>
+               <span className="truncate flex-1">
+                 {selectedTenant?.nome || 'Adicione uma organização'}
+               </span>
              </div>
              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -56,16 +63,24 @@ export function TopBar() {
                 onClick={() => setSelectedTenantId(tenant.id)}
                 className={selectedTenant?.id === tenant.id ? 'bg-accent' : ''}
               >
-                <span className="font-medium text-sm">{tenant.nome}</span>
+                <span className="truncate block w-full font-medium text-sm">{tenant.nome}</span>
               </DropdownMenuItem>
             ))
           ) : (
-            <DropdownMenuItem disabled>
-              Nenhuma organização disponível
-            </DropdownMenuItem>
+            <>
+              <div className="px-2 py-3 text-sm text-muted-foreground text-center">
+                Você ainda não possui<br />organizações cadastradas
+              </div>
+              <DropdownMenuSeparator />
+            </>
           )}
-          <DropdownMenuSeparator />
-          <DropdownMenuItem disabled>Adicionar empresa...</DropdownMenuItem>
+          {tenants.length > 0 && <DropdownMenuSeparator />}
+          <DropdownMenuItem 
+            onClick={() => router.push('/organizations/new')}
+            className={tenants.length === 0 ? 'font-semibold bg-accent' : ''}
+          >
+            Adicionar empresa...
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 

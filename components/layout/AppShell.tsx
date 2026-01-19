@@ -80,8 +80,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         setUser(userObj);
         setTenants(tenantsList);
         
-        // Set initial selected tenant to first one or fallback to profile tenant_id
+        // Set initial selected tenant - always ensure a tenant is selected
         if (tenantsList.length > 0) {
+          // Select first tenant from user_tenants
           setSelectedTenantId(tenantsList[0].id);
         } else if (profile.tenant_id) {
           // Fallback: load tenant directly from profile for backward compatibility
@@ -100,7 +101,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             };
             setTenants([tenant]);
             setSelectedTenantId(tenant.id);
+          } else {
+            // No tenant found - user needs to create one
+            console.warn('User has no tenants associated');
           }
+        } else {
+          // No tenant at all - user needs to create one
+          console.warn('User has no tenants associated');
         }
       } catch (err) {
         console.error('Auth error:', err);
@@ -164,8 +171,28 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             
             setUser(userObj);
             setTenants(tenantsList);
+            
+            // Always select a tenant when available
             if (tenantsList.length > 0) {
               setSelectedTenantId(tenantsList[0].id);
+            } else if (profile.tenant_id) {
+              // Fallback to profile tenant_id
+              const { data: fallbackTenant } = await supabase
+                .from('tenants')
+                .select('*')
+                .eq('id', profile.tenant_id)
+                .single();
+              
+              if (fallbackTenant) {
+                const tenant = {
+                  id: fallbackTenant.id,
+                  nome: fallbackTenant.nome,
+                  cnpj: fallbackTenant.cnpj,
+                  logoUrl: fallbackTenant.logo_url || undefined,
+                };
+                setTenants([tenant]);
+                setSelectedTenantId(tenant.id);
+              }
             }
           }
         }
