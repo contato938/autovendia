@@ -14,7 +14,7 @@ export type ConversionStatus = 'queued' | 'sent' | 'failed';
 export interface Tenant {
   id: string;
   nome: string;
-  cnpj: string;
+  cnpj: string | null;
   logoUrl?: string;
 }
 
