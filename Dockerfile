@@ -55,7 +55,7 @@ COPY --from=builder /app/public ./public
 
 # Utilizar standalone output para otimizar a imagem
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-RUN mkdir .next
+RUN mkdir -p .next && chown nextjs:nodejs .next
 
 # Copiar arquivos do build
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
@@ -65,12 +65,12 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --chown=nextjs:nodejs entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
-USER nextjs
-
 EXPOSE 3000
 
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+
+USER nextjs
 
 # Usar entrypoint para substituir placeholders em runtime
 ENTRYPOINT ["/app/entrypoint.sh"]

@@ -40,62 +40,61 @@ if [ -z "$SUPABASE_ANON_KEY_FINAL" ] || [ "$SUPABASE_ANON_KEY_FINAL" = "placehol
   exit 1
 fi
 
-echo "🔄 Substituindo placeholders no bundle Next.js..."
+RUNTIME_DIR="/tmp/autovendia-runtime"
 
-replace_placeholders_in_targets() {
-  # IMPORTANTE:
-  # No output standalone do Next.js, o servidor (ex.: /app/server.js) fica FORA de /app/.next.
-  # Para evitar start lento (Bad Gateway por timeout), substituímos apenas nos alvos certos:
-  # - /app/server.js (standalone)
-  # - /app/.next/**/*.js|json (assets do Next)
-  # USAR /tmp para arquivos temporários (nextjs user não pode escrever direto em /app)
+echo "📦 Preparando runtime em $RUNTIME_DIR..."
+rm -rf "$RUNTIME_DIR"
+mkdir -p "$RUNTIME_DIR"
 
-  if [ -f "/app/server.js" ]; then
+if [ ! -f "/app/server.js" ]; then
+  echo "❌ ERRO: /app/server.js não encontrado. O build standalone pode ter falhado."
+  exit 1
+fi
+
+if [ ! -d "/app/.next" ]; then
+  echo "❌ ERRO: /app/.next não encontrado. O build do Next.js pode ter falhado."
+  exit 1
+fi
+
+cp /app/server.js "$RUNTIME_DIR/server.js"
+cp -R /app/.next "$RUNTIME_DIR/.next"
+
+ln -s /app/node_modules "$RUNTIME_DIR/node_modules"
+ln -s /app/public "$RUNTIME_DIR/public"
+
+echo "🔄 Substituindo placeholders no bundle Next.js (runtime em /tmp)..."
+
+replace_placeholders_in_file() {
+  file="$1"
+  tmpfile="${file}.tmp"
+
+  if [ -n "$API_BASE_URL_FINAL" ]; then
     sed \
       -e "s|https://placeholder\.supabase\.co|$SUPABASE_URL_FINAL|g" \
       -e "s|placeholder-anon-key|$SUPABASE_ANON_KEY_FINAL|g" \
       -e "s|http://localhost:3000|$SITE_URL_FINAL|g" \
-      /app/server.js > /tmp/server.js.tmp && mv /tmp/server.js.tmp /app/server.js
-  fi
-
-  if [ -d "/app/.next" ]; then
-    find /app/.next -type f \( -name "*.js" -o -name "*.json" \) | while read file; do
-      sed \
-        -e "s|https://placeholder\.supabase\.co|$SUPABASE_URL_FINAL|g" \
-        -e "s|placeholder-anon-key|$SUPABASE_ANON_KEY_FINAL|g" \
-        -e "s|http://localhost:3000|$SITE_URL_FINAL|g" \
-        "$file" > /tmp/nextfile.tmp && mv /tmp/nextfile.tmp "$file"
-    done
+      -e "s|https://placeholder\.api\.base\.url|$API_BASE_URL_FINAL|g" \
+      "$file" > "$tmpfile" && mv "$tmpfile" "$file"
+  else
+    sed \
+      -e "s|https://placeholder\.supabase\.co|$SUPABASE_URL_FINAL|g" \
+      -e "s|placeholder-anon-key|$SUPABASE_ANON_KEY_FINAL|g" \
+      -e "s|http://localhost:3000|$SITE_URL_FINAL|g" \
+      -e "s|https://placeholder\.api\.base\.url||g" \
+      "$file" > "$tmpfile" && mv "$tmpfile" "$file"
   fi
 }
 
-replace_placeholders_in_targets
+replace_placeholders_in_file "$RUNTIME_DIR/server.js"
 
-# Substituir API_BASE_URL apenas se não estiver vazio
-if [ -n "$API_BASE_URL_FINAL" ]; then
-  # server.js pode conter a base URL
-  if [ -f "/app/server.js" ]; then
-    sed -e "s|https://placeholder\.api\.base\.url|$API_BASE_URL_FINAL|g" /app/server.js > /tmp/server.js.tmp && mv /tmp/server.js.tmp /app/server.js
-  fi
-  if [ -d "/app/.next" ]; then
-    find /app/.next -type f \( -name "*.js" -o -name "*.json" \) | while read file; do
-      sed -e "s|https://placeholder\.api\.base\.url|$API_BASE_URL_FINAL|g" "$file" > /tmp/nextfile.tmp && mv /tmp/nextfile.tmp "$file"
-    done
-  fi
-else
-  # Se vazio, substitui por string vazia
-  if [ -f "/app/server.js" ]; then
-    sed -e "s|https://placeholder\.api\.base\.url||g" /app/server.js > /tmp/server.js.tmp && mv /tmp/server.js.tmp /app/server.js
-  fi
-  if [ -d "/app/.next" ]; then
-    find /app/.next -type f \( -name "*.js" -o -name "*.json" \) | while read file; do
-      sed -e "s|https://placeholder\.api\.base\.url||g" "$file" > /tmp/nextfile.tmp && mv /tmp/nextfile.tmp "$file"
-    done
-  fi
+if [ -d "$RUNTIME_DIR/.next" ]; then
+  find "$RUNTIME_DIR/.next" -type f \( -name "*.js" -o -name "*.json" \) | while read file; do
+    replace_placeholders_in_file "$file"
+  done
 fi
 
 echo "✅ Placeholders substituídos com sucesso!"
 echo "🎯 Iniciando servidor Next.js..."
 
-# Executar node server.js
+cd "$RUNTIME_DIR"
 exec node server.js
