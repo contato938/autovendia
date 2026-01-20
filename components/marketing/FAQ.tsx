@@ -13,14 +13,14 @@ export function FAQ() {
     return (
       <section id="faq" className="container mx-auto py-12 md:py-24 space-y-12">
         <div className="text-center space-y-4">
-          <h2 className="text-3xl font-bold text-primary">Perguntas Frequentes</h2>
+          <h2 className="type-h2 text-primary">Perguntas Frequentes</h2>
         </div>
         
         <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           {[
             {
               q: "Preciso trocar meu WhatsApp?",
-              a: "Não. O AutovendaIA funciona como uma camada de inteligência sobre o seu processo atual. Você continua usando seu número."
+              a: "Não. O AUTOVEND IA funciona como uma camada de inteligência sobre o seu processo atual. Você continua usando seu número."
             },
             {
               q: "Precisa de Tag Manager?",

@@ -23,7 +23,7 @@ export function ProductPreview() {
               <div className="w-3 h-3 rounded-full bg-green-400" />
             </div>
             <div className="mx-auto bg-background border px-3 py-1 rounded-md text-xs text-muted-foreground w-64 text-center">
-              app.autovendaia.com/dashboard
+              app.autovendia.com/dashboard
             </div>
           </div>
           
@@ -39,7 +39,7 @@ export function ProductPreview() {
                 <div key={i} className="p-4 rounded-lg border bg-background space-y-1">
                   <p className="text-xs text-muted-foreground font-medium uppercase">{kpi.label}</p>
                   <div className="flex items-end justify-between">
-                    <p className={`text-2xl font-bold ${kpi.color}`}>{kpi.value}</p>
+                    <p className={`text-2xl font-bold font-kpi tabular-nums ${kpi.color}`}>{kpi.value}</p>
                     <span className="text-xs text-green-600 font-medium bg-green-100 dark:bg-green-900 px-1.5 py-0.5 rounded">
                       {kpi.change}
                     </span>
@@ -65,7 +65,7 @@ export function ProductPreview() {
                     <div key={i} className="group relative">
                       <div className="flex justify-between text-xs mb-1">
                         <span className="font-medium">{step.label}</span>
-                        <span className="text-muted-foreground">{step.value} ({step.pct})</span>
+                        <span className="text-muted-foreground font-kpi tabular-nums">{step.value} ({step.pct})</span>
                       </div>
                       <div className="h-8 w-full bg-muted rounded-md overflow-hidden relative">
                         <div 

@@ -1,26 +1,29 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Inter, Montserrat } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/query-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/theme-provider";
 
-// Montserrat para títulos - SemiBold (600) e Bold (700)
-const montserrat = Montserrat({ 
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  variable: "--font-montserrat",
-});
-
-// Inter para texto corrido - Regular (400) e Medium (500)
+// Inter (fonte principal) - Regular/Medium/SemiBold/Bold
 const inter = Inter({ 
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-inter",
+  fallback: ["Arial", "Helvetica", "Roboto", "system-ui", "sans-serif"],
+});
+
+// Space Grotesk (uso pontual) - KPIs/números/chamadas
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-space-grotesk",
+  fallback: ["Arial", "Helvetica", "Roboto", "system-ui", "sans-serif"],
 });
 
 export const metadata: Metadata = {
-  title: "AutovendaIA",
+  title: "AUTOVEND IA",
   description: "SaaS de Automação de Vendas",
 };
 
@@ -47,11 +50,13 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.variable} ${montserrat.variable} font-sans antialiased`} suppressHydrationWarning>
-        <QueryProvider>
-          {children}
-          <Toaster />
-        </QueryProvider>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`} suppressHydrationWarning>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+          <QueryProvider>
+            {children}
+            <Toaster />
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

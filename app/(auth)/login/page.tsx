@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { toast } from 'sonner';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import { BrandLogo } from '@/components/brand/BrandLogo';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -70,85 +71,118 @@ export default function LoginPage() {
 
   if (checkingSession) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-primary via-secondary to-primary">
-        <Loader2 className="h-8 w-8 animate-spin text-white" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-primary via-secondary to-primary p-4">
-      <Card className="w-full max-w-md shadow-2xl">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-2xl font-bold text-white">A</span>
+    <div className="min-h-screen bg-linear-to-br from-background to-muted p-4">
+      <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-5xl items-center">
+        <div className="grid w-full gap-8 md:grid-cols-2 md:items-stretch">
+          {/* Painel de marca (marketing) */}
+          <div className="hidden md:flex flex-col justify-center rounded-2xl border bg-card p-10 shadow-sm relative overflow-hidden">
+            <div className="absolute -right-10 -bottom-10 opacity-10">
+              <BrandLogo variant="symbol" className="h-48 w-48" />
+            </div>
+            <BrandLogo variant="vertical" className="h-40 w-40" />
+            <h1 className="mt-8 type-h3 text-primary">
+              Clique → WhatsApp → Venda, com atribuição real.
+            </h1>
+            <p className="mt-3 text-muted-foreground leading-relaxed">
+              Conecte Google Ads, rastreie a origem do lead e envie conversões offline para o algoritmo otimizar pelo que importa: venda.
+            </p>
+            <div className="mt-6 grid gap-3 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                Funil completo e ROAS real
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                Conversões offline automáticas
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                Visão operacional do atendimento
+              </div>
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold">AutovendaIA</CardTitle>
-          <CardDescription>Atribuição completa do clique à venda. Maximize seu ROAS com dados reais.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
-                autoComplete="email"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-                autoComplete="current-password"
-              />
-            </div>
-            <div className="flex justify-end">
-              <Link
-                href="/reset"
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                Esqueci minha senha
-              </Link>
-            </div>
-            {error && (
-              <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
-                {error}
-              </div>
-            )}
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Entrando...
-                </>
-              ) : (
-                'Entrar'
-              )}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-center">
-          <Link 
-            href="/" 
-            className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Voltar para o site
-          </Link>
-        </CardFooter>
-      </Card>
+
+          {/* Card de login */}
+          <div className="flex items-center">
+            <Card className="w-full max-w-md shadow-xl mx-auto">
+              <CardHeader className="space-y-1 text-center">
+                <div className="flex justify-center mb-4">
+                  <BrandLogo variant="symbol" className="h-14 w-14" />
+                </div>
+                <CardTitle className="text-2xl font-bold tracking-tight">AUTOVEND IA</CardTitle>
+                <CardDescription>Atribuição completa do clique à venda. Maximize seu ROAS com dados reais.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="seu@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      disabled={loading}
+                      autoComplete="email"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Senha</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={loading}
+                      autoComplete="current-password"
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <Link
+                      href="/reset"
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      Esqueci minha senha
+                    </Link>
+                  </div>
+                  {error && (
+                    <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+                      {error}
+                    </div>
+                  )}
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Entrando...
+                      </>
+                    ) : (
+                      'Entrar'
+                    )}
+                  </Button>
+                </form>
+              </CardContent>
+              <CardFooter className="flex justify-center">
+                <Link 
+                  href="/" 
+                  className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Voltar para o site
+                </Link>
+              </CardFooter>
+            </Card>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -17,8 +17,8 @@ export function FeatureGrid() {
       {/* Problema */}
       <section className="container mx-auto space-y-8">
         <div className="text-center max-w-2xl mx-auto space-y-4">
-          <Badge variant="secondary" className="bg-destructive/10 text-destructive hover:bg-destructive/20">O Problema</Badge>
-          <h2 className="text-3xl font-bold text-primary">Por que você está perdendo dinheiro?</h2>
+          <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/15">O Problema</Badge>
+          <h2 className="type-h2 text-primary">Por que você está perdendo dinheiro?</h2>
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           {[
@@ -40,7 +40,7 @@ export function FeatureGrid() {
           ].map((item, i) => (
             <Card key={i} className="border-none shadow-md bg-card">
               <CardHeader>
-                <item.icon className="h-10 w-10 text-destructive mb-2" />
+                <item.icon className="h-10 w-10 text-primary mb-2" />
                 <CardTitle className="text-xl">{item.title}</CardTitle>
               </CardHeader>
               <CardContent>
@@ -54,7 +54,7 @@ export function FeatureGrid() {
       {/* Solução */}
       <section className="bg-primary text-primary-foreground py-16 -mx-4 md:-mx-8 px-4 md:px-8">
         <div className="container mx-auto text-center space-y-6">
-          <h2 className="text-3xl md:text-4xl font-bold">Feche o loop do clique à venda</h2>
+          <h2 className="type-h2 text-primary-foreground">Feche o loop do clique à venda</h2>
           <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">
             Do anúncio ao WhatsApp, do WhatsApp à venda, da venda de volta ao Google Ads. 
             Uma linha contínua de dados para maximizar seu lucro.
@@ -66,7 +66,7 @@ export function FeatureGrid() {
       <section id="como-funciona" className="container mx-auto space-y-12">
         <div className="text-center max-w-2xl mx-auto">
           <Badge variant="outline" className="border-primary text-primary mb-4">Passo a passo</Badge>
-          <h2 className="text-3xl font-bold text-primary">Como funciona</h2>
+          <h2 className="type-h2 text-primary">Como funciona</h2>
         </div>
         <div className="grid md:grid-cols-4 gap-8 relative">
           <div className="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-border -z-10" />
@@ -90,12 +90,12 @@ export function FeatureGrid() {
       {/* Recursos */}
       <section id="recursos" className="container mx-auto space-y-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-primary mb-4">Tudo o que você precisa</h2>
+          <h2 className="type-h2 text-primary mb-4">Tudo o que você precisa</h2>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
             { icon: BarChart3, title: "Dashboard Completo", text: "KPIs vitais: investimento, leads, vendas, receita e ROAS em tempo real." },
-            { icon: ArrowRightLeft, title: "Funil AutovendaIA", text: "Visualização clara: click → WhatsApp → qualificado → venda." },
+            { icon: ArrowRightLeft, title: "Funil AUTOVEND IA", text: "Visualização clara: click → WhatsApp → qualificado → venda." },
             { icon: Target, title: "Campanhas Reais", text: "Analise quais campanhas trazem dinheiro, não apenas curiosos." },
             { icon: RefreshCw, title: "Conversões Offline", text: "Gestão completa de envios: fila, processados, falhas e reprocessamento." },
             { icon: Zap, title: "Saúde Operacional", text: "Monitore tempo de 1ª resposta e gargalos no atendimento." },
@@ -116,7 +116,7 @@ export function FeatureGrid() {
 
       {/* Integrações */}
       <section className="container mx-auto bg-muted/50 rounded-3xl p-8 md:p-12 text-center space-y-8">
-        <h2 className="text-2xl font-bold">Integrações Nativas</h2>
+        <h2 className="type-h3">Integrações Nativas</h2>
         <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
           <div className="flex flex-col items-center gap-2">
             <div className="h-16 w-16 bg-white rounded-xl shadow-sm flex items-center justify-center p-3">
@@ -150,7 +150,7 @@ export function FeatureGrid() {
         <div className="flex justify-center">
             <ShieldCheck className="w-12 h-12 text-primary/50" />
         </div>
-        <h2 className="text-2xl font-bold">Segurança e LGPD</h2>
+        <h2 className="type-h3">Segurança e LGPD</h2>
         <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto text-sm text-muted-foreground">
             <div className="bg-card p-4 rounded-lg border">
                 <p>Dados em trânsito criptografados via HTTPS</p>

@@ -22,7 +22,7 @@ export function KpiCard({ title, value, icon: Icon, delta }: KpiCardProps) {
         <Icon className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+        <div className="text-2xl font-bold font-kpi tabular-nums">{value}</div>
         {showDelta && (
           <div className="flex items-center gap-1 mt-1">
             {isPositive ? (

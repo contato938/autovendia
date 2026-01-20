@@ -5,6 +5,7 @@ import { ProductPreview } from './ProductPreview';
 import { FeatureGrid } from './FeatureGrid';
 import { FAQ } from './FAQ';
 import { MarketingFooter } from './MarketingFooter';
+import { BrandLogo } from '@/components/brand/BrandLogo';
 
 export function LandingPage() {
   return (
@@ -13,14 +14,19 @@ export function LandingPage() {
       
       <main>
         {/* Hero Section */}
-        <section className="container mx-auto pt-20 pb-12 md:pt-32 md:pb-16 text-center space-y-8">
+        <section className="container mx-auto pt-20 pb-12 md:pt-32 md:pb-16 text-center space-y-8 relative">
+          {/* Marca (reforço visual) */}
+          <div className="flex justify-center">
+            <BrandLogo variant="horizontal" className="h-9 w-[220px]" />
+          </div>
+
           <div className="space-y-4 max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-primary leading-tight">
+            <h1 className="type-h1 text-primary leading-tight">
               Pare de adivinhar. <br className="hidden md:block" />
               Saiba quais anúncios viram venda no WhatsApp.
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              O AutovendaIA conecta Google Ads + WhatsApp + venda, mostra ROAS real e envia conversões offline para otimizar o algoritmo.
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              O AUTOVEND IA conecta Google Ads + WhatsApp + venda, mostra ROAS real e envia conversões offline para otimizar o algoritmo.
             </p>
           </div>
 

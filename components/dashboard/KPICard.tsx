@@ -19,7 +19,7 @@ export function KPICard({ title, value, icon: Icon, trend, trendUp }: KPICardPro
         <Icon className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+        <div className="text-2xl font-bold font-kpi tabular-nums">{value}</div>
         {trend && (
           <p className={`text-xs ${trendUp ? 'text-green-600' : 'text-red-600'}`}>
             {trend}
