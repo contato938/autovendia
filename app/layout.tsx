@@ -6,9 +6,6 @@ import { QueryProvider } from "@/components/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
 // Inter (fonte principal) - Regular/Medium/SemiBold/Bold
 const inter = Inter({ 
   subsets: ["latin"],
@@ -35,22 +32,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const supabaseEnv = {
-    // Prioriza variáveis "server/runtime" (não NEXT_PUBLIC) para evitar valores embutidos no build.
-    // Em produção via Docker/Dokploy, configure SUPABASE_URL / SUPABASE_ANON_KEY (ou NEXT_PUBLIC_*).
-    url: process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-    anonKey: process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
-  };
-
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <head>
         <Script
-          id="supabase-env"
+          src="/api/runtime-env"
           strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `window.__SUPABASE_ENV__ = ${JSON.stringify(supabaseEnv)};`,
-          }}
         />
       </head>
       <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`} suppressHydrationWarning>
