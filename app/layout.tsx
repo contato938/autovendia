@@ -32,12 +32,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Ler env vars em runtime (prioriza SUPABASE_URL/SUPABASE_ANON_KEY do servidor)
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+  
+  // Não injeta se for placeholder (força client a usar stub)
+  const isPlaceholder = supabaseUrl.includes('placeholder.supabase.co') || supabaseAnonKey.includes('placeholder-anon-key');
+  const supabaseEnv = isPlaceholder ? { url: '', anonKey: '' } : { url: supabaseUrl, anonKey: supabaseAnonKey };
+
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <head>
         <Script
-          src="/api/runtime-env"
+          id="supabase-env"
           strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `window.__SUPABASE_ENV__ = ${JSON.stringify(supabaseEnv)};`,
+          }}
         />
       </head>
       <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`} suppressHydrationWarning>

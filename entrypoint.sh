@@ -28,21 +28,23 @@ echo "  - SUPABASE_ANON_KEY: $(mask_key "$SUPABASE_ANON_KEY")"
 echo "  - SITE_URL: $SITE_URL"
 echo "  - API_BASE_URL: ${API_BASE_URL:-(não configurado)}"
 
-# Validação obrigatória
+# Validação (warning apenas, não bloqueia start)
 if [ -z "$SUPABASE_URL" ] || [ "$SUPABASE_URL" = "https://placeholder.supabase.co" ]; then
-  echo "❌ ERRO: SUPABASE_URL não configurada ou ainda está com placeholder!"
-  echo "Configure SUPABASE_URL ou NEXT_PUBLIC_SUPABASE_URL no Dokploy e refaça o deploy."
-  exit 1
+  echo "⚠️  AVISO: SUPABASE_URL não configurada ou placeholder!"
+  echo "   Configure SUPABASE_URL ou NEXT_PUBLIC_SUPABASE_URL no Dokploy."
+  echo "   O app vai usar modo stub (autenticação não funcionará)."
+else
+  echo "✅ SUPABASE_URL validada!"
 fi
 
 if [ -z "$SUPABASE_ANON_KEY" ] || [ "$SUPABASE_ANON_KEY" = "placeholder-anon-key" ]; then
-  echo "❌ ERRO: SUPABASE_ANON_KEY não configurada ou ainda está com placeholder!"
-  echo "Configure SUPABASE_ANON_KEY ou NEXT_PUBLIC_SUPABASE_ANON_KEY no Dokploy e refaça o deploy."
-  exit 1
+  echo "⚠️  AVISO: SUPABASE_ANON_KEY não configurada ou placeholder!"
+  echo "   Configure SUPABASE_ANON_KEY ou NEXT_PUBLIC_SUPABASE_ANON_KEY no Dokploy."
+  echo "   O app vai usar modo stub (autenticação não funcionará)."
+else
+  echo "✅ SUPABASE_ANON_KEY validada!"
 fi
-
-echo "✅ Env vars validadas!"
 echo "🎯 Iniciando servidor Next.js..."
 
-# Executar node server.js como usuário nextjs (segurança)
-exec su-exec nextjs node /app/server.js
+# Executar node server.js (já roda como nextjs por causa do Dockerfile USER nextjs)
+exec node /app/server.js
