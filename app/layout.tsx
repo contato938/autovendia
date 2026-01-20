@@ -6,6 +6,8 @@ import { QueryProvider } from "@/components/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 
+export const dynamic = "force-dynamic";
+
 // Inter (fonte principal) - Regular/Medium/SemiBold/Bold
 const inter = Inter({ 
   subsets: ["latin"],
