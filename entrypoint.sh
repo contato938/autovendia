@@ -42,41 +42,56 @@ fi
 
 echo "🔄 Substituindo placeholders no bundle Next.js..."
 
-replace_placeholders_in_dir() {
-  TARGET_DIR="$1"
-  if [ ! -d "$TARGET_DIR" ]; then
-    return 0
-  fi
+replace_placeholders_in_targets() {
+  # IMPORTANTE:
+  # No output standalone do Next.js, o servidor (ex.: /app/server.js) fica FORA de /app/.next.
+  # Para evitar start lento (Bad Gateway por timeout), substituímos apenas nos alvos certos:
+  # - /app/server.js (standalone)
+  # - /app/.next/**/*.js|json (assets do Next)
+  # USAR /tmp para arquivos temporários (nextjs user não pode escrever direto em /app)
 
-  find "$TARGET_DIR" -type f \( -name "*.js" -o -name "*.json" \) \
-    ! -path "/app/node_modules/*" \
-    -exec sed -i \
+  if [ -f "/app/server.js" ]; then
+    sed \
       -e "s|https://placeholder\.supabase\.co|$SUPABASE_URL_FINAL|g" \
       -e "s|placeholder-anon-key|$SUPABASE_ANON_KEY_FINAL|g" \
       -e "s|http://localhost:3000|$SITE_URL_FINAL|g" \
-      {} +
+      /app/server.js > /tmp/server.js.tmp && mv /tmp/server.js.tmp /app/server.js
+  fi
+
+  if [ -d "/app/.next" ]; then
+    find /app/.next -type f \( -name "*.js" -o -name "*.json" \) | while read file; do
+      sed \
+        -e "s|https://placeholder\.supabase\.co|$SUPABASE_URL_FINAL|g" \
+        -e "s|placeholder-anon-key|$SUPABASE_ANON_KEY_FINAL|g" \
+        -e "s|http://localhost:3000|$SITE_URL_FINAL|g" \
+        "$file" > /tmp/nextfile.tmp && mv /tmp/nextfile.tmp "$file"
+    done
+  fi
 }
 
-# IMPORTANTE:
-# No output standalone do Next.js, o servidor (ex.: /app/server.js) fica FORA de /app/.next.
-# Então substituímos placeholders em /app inteiro (exclui node_modules) e também em /app/.next.
-replace_placeholders_in_dir /app
-replace_placeholders_in_dir /app/.next
+replace_placeholders_in_targets
 
 # Substituir API_BASE_URL apenas se não estiver vazio
 if [ -n "$API_BASE_URL_FINAL" ]; then
-  find /app -type f \( -name "*.js" -o -name "*.json" \) \
-    ! -path "/app/node_modules/*" \
-    -exec sed -i \
-      -e "s|https://placeholder\.api\.base\.url|$API_BASE_URL_FINAL|g" \
-      {} +
+  # server.js pode conter a base URL
+  if [ -f "/app/server.js" ]; then
+    sed -e "s|https://placeholder\.api\.base\.url|$API_BASE_URL_FINAL|g" /app/server.js > /tmp/server.js.tmp && mv /tmp/server.js.tmp /app/server.js
+  fi
+  if [ -d "/app/.next" ]; then
+    find /app/.next -type f \( -name "*.js" -o -name "*.json" \) | while read file; do
+      sed -e "s|https://placeholder\.api\.base\.url|$API_BASE_URL_FINAL|g" "$file" > /tmp/nextfile.tmp && mv /tmp/nextfile.tmp "$file"
+    done
+  fi
 else
   # Se vazio, substitui por string vazia
-  find /app -type f \( -name "*.js" -o -name "*.json" \) \
-    ! -path "/app/node_modules/*" \
-    -exec sed -i \
-      -e "s|https://placeholder\.api\.base\.url||g" \
-      {} +
+  if [ -f "/app/server.js" ]; then
+    sed -e "s|https://placeholder\.api\.base\.url||g" /app/server.js > /tmp/server.js.tmp && mv /tmp/server.js.tmp /app/server.js
+  fi
+  if [ -d "/app/.next" ]; then
+    find /app/.next -type f \( -name "*.js" -o -name "*.json" \) | while read file; do
+      sed -e "s|https://placeholder\.api\.base\.url||g" "$file" > /tmp/nextfile.tmp && mv /tmp/nextfile.tmp "$file"
+    done
+  fi
 fi
 
 echo "✅ Placeholders substituídos com sucesso!"
