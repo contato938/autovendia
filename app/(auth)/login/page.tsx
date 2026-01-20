@@ -59,7 +59,7 @@ export default function LoginPage() {
 
       if (data.session) {
         toast.success('Login realizado com sucesso!');
-        router.push('/dashboard');
+        router.replace('/dashboard');
       }
     } catch (err: any) {
       setError(err.message || 'Erro ao fazer login');

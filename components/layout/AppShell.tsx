@@ -8,6 +8,7 @@ import { AppSidebar } from './AppSidebar';
 import { TopBar } from './TopBar';
 import { supabase } from '@/lib/supabase/client';
 import type { User, Tenant } from '@/types';
+import { BrandLogo } from '@/components/brand/BrandLogo';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, setUser, setTenants, setSelectedTenantId } = useStore();
@@ -18,6 +19,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     // Check auth session and load profile
     const loadUserSession = async () => {
       try {
+        const t0 = typeof performance !== 'undefined' ? performance.now() : 0;
+
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error || !session) {
@@ -25,12 +28,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // Load profile from database
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
+        // Load profile + user_tenants em paralelo (reduz latência)
+        const [profileRes, userTenantsRes] = await Promise.all([
+          supabase
+            .from('profiles')
+            .select('id, nome, role, tenant_id, avatar_url')
+            .eq('id', session.user.id)
+            .single(),
+          supabase
+            .from('user_tenants')
+            .select('tenant_id, role')
+            .eq('user_id', session.user.id),
+        ]);
+
+        const profile = profileRes.data;
+        const profileError = profileRes.error;
+        const userTenants = userTenantsRes.data;
+        const tenantsError = userTenantsRes.error;
 
         if (profileError || !profile) {
           console.error('Error loading profile:', profileError);
@@ -38,17 +52,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // Load user's tenant associations first (without join to avoid RLS issues)
-        const { data: userTenants, error: tenantsError } = await supabase
-          .from('user_tenants')
-          .select('tenant_id, role')
-          .eq('user_id', session.user.id);
-
         if (tenantsError) {
           console.error('Error loading user_tenants:', tenantsError);
         }
-
-        console.log('User tenant associations loaded:', userTenants);
 
         let tenantsList: Tenant[] = [];
 
@@ -120,6 +126,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         } else {
           // No tenant at all - user needs admin assistance
           console.error('User has no tenants associated. Profile:', profile);
+        }
+
+        const t1 = typeof performance !== 'undefined' ? performance.now() : 0;
+        if (process.env.NODE_ENV !== 'production' && t0 && t1) {
+          // eslint-disable-next-line no-console
+          console.log(`[AppShell] bootstrap ${(t1 - t0).toFixed(0)}ms`);
         }
       } catch (err) {
         console.error('Auth error:', err);
@@ -224,7 +236,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, [router, setUser]);
 
   if (loading || !user) {
-    return null; // ou um loading spinner
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <BrandLogo variant="symbol" className="h-12 w-12" />
+          <div className="h-2 w-48 rounded-full bg-muted overflow-hidden">
+            <div className="h-full w-1/2 bg-primary/40 animate-pulse" />
+          </div>
+          <p className="text-sm text-muted-foreground">Carregando sua área logada…</p>
+        </div>
+      </div>
+    ); // feedback visual enquanto carrega
   }
 
   return (

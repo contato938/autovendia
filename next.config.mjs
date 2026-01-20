@@ -16,6 +16,56 @@ const nextConfig = {
     root: __dirname,
   },
 
+  async headers() {
+    return [
+      {
+        source: "/Autovend IA - Logo Horizontal sem fundo.png",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/Autovend IA - Logo Horizontal cor branca sem fundo.png",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/Autovend IA - Logo Vertical sem fundo.png",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/Autovend IA - Logo Vertical cor branca sem fundo.png",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/Autovend IA - Simbolo sem fundo.png",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ];
+  },
+
   experimental: {
     turbopackUseSystemTlsCerts: true,
   },

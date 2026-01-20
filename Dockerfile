@@ -35,7 +35,9 @@ ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
 
 # Para o runtime otimizado (standalone), precisamos gerar /app/.next/standalone no build
 ENV NEXT_STANDALONE=1
-RUN npm run build
+# Workaround: Turbopack pode falhar com ENOENT/arquivos temporários em alguns FS/CI.
+# Forçamos Webpack para builds estáveis no deploy.
+RUN npm run build -- --webpack
 
 # Imagem de produção: copiar todos os arquivos e executar next
 FROM base AS runner

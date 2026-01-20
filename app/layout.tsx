@@ -27,8 +27,6 @@ export const metadata: Metadata = {
   description: "SaaS de Automação de Vendas",
 };
 
-export const dynamic = "force-dynamic";
-
 export default function RootLayout({
   children,
 }: Readonly<{
