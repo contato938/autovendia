@@ -7,12 +7,6 @@ type SupabaseEnv = {
   anonKey?: string;
 };
 
-declare global {
-  interface Window {
-    __SUPABASE_ENV__?: SupabaseEnv;
-  }
-}
-
 const isPlaceholderSupabaseUrl = (url?: string) =>
   Boolean(url && url.trim() === 'https://placeholder.supabase.co');
 
@@ -31,13 +25,6 @@ const isProbablyValidUrl = (url?: string) => {
 };
 
 const readSupabaseEnv = (): SupabaseEnv => {
-  if (typeof window !== 'undefined') {
-    const runtimeEnv = window.__SUPABASE_ENV__;
-    if (runtimeEnv?.url && runtimeEnv?.anonKey) {
-      return runtimeEnv;
-    }
-  }
-
   return {
     url: process.env.NEXT_PUBLIC_SUPABASE_URL,
     anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,

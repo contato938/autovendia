@@ -16,7 +16,7 @@ const LOGOS = {
   },
   symbol: {
     light: "/Autovend IA - Simbolo sem fundo.png",
-    dark: "/Autovend IA - Simbolo sem fundo.png",
+    dark: "/Autovend IA - Simbolo sem fundo.png", // Usa filtro CSS para inverter em dark mode
   },
 } satisfies Record<BrandLogoVariant, { light: string; dark: string }>
 
@@ -49,10 +49,21 @@ export function BrandLogo({
     )
   }
 
+  // Para o símbolo, aplicar filtro de inversão em dark mode (já que não temos versão branca)
+  const needsInvert = variant === "symbol"
+  
   return (
     <span className={className} aria-label={alt} title={alt}>
-      <img src={light} alt={alt} className="block dark:hidden w-full h-full object-contain" />
-      <img src={dark} alt={alt} className="hidden dark:block w-full h-full object-contain" />
+      <img 
+        src={light} 
+        alt={alt} 
+        className={`block dark:hidden w-full h-full object-contain`}
+      />
+      <img 
+        src={dark} 
+        alt={alt} 
+        className={`hidden dark:block w-full h-full object-contain ${needsInvert ? 'dark:invert dark:brightness-0' : ''}`}
+      />
     </span>
   )
 }

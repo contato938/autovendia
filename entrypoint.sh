@@ -21,11 +21,6 @@ export SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY:-${NEXT_PUBLIC_SUPABASE_ANON_KEY}}
 export SITE_URL="${SITE_URL:-${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}}"
 export API_BASE_URL="${API_BASE_URL:-${NEXT_PUBLIC_API_BASE_URL}}"
 
-# IMPORTANTE: Também exportar com prefixo NEXT_PUBLIC_ para o processo Node
-# (garante que o layout.tsx leia valores corretos em runtime)
-export NEXT_PUBLIC_SUPABASE_URL="${SUPABASE_URL}"
-export NEXT_PUBLIC_SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY}"
-
 # Debug (com mascaramento)
 echo "📊 Configuração detectada:"
 echo "  - SUPABASE_URL: $(mask_key "$SUPABASE_URL")"

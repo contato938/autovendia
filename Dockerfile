@@ -22,11 +22,12 @@ COPY . .
 # Descomente a linha abaixo caso queira desabilitar a telemetria durante o build.
 # ENV NEXT_TELEMETRY_DISABLED=1
 
-# Variáveis públicas com placeholders - serão substituídas em runtime
-ARG NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
-ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder-anon-key
-ARG NEXT_PUBLIC_SITE_URL=http://localhost:3000
-ARG NEXT_PUBLIC_API_BASE_URL=https://placeholder.api.base.url
+# Variáveis públicas - OBRIGATÓRIO passar via build args (sem default)
+# Se não passar, o build falha (melhor que buildar com placeholder)
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+ARG NEXT_PUBLIC_SITE_URL
+ARG NEXT_PUBLIC_API_BASE_URL
 
 ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
