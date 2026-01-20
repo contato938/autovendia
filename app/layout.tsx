@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 // Inter (fonte principal) - Regular/Medium/SemiBold/Bold
 const inter = Inter({ 
