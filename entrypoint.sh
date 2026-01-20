@@ -42,23 +42,41 @@ fi
 
 echo "🔄 Substituindo placeholders no bundle Next.js..."
 
-# Substituir placeholders nos arquivos .next
-find /app/.next -type f \( -name "*.js" -o -name "*.json" \) -exec sed -i \
-  -e "s|https://placeholder\.supabase\.co|$SUPABASE_URL_FINAL|g" \
-  -e "s|placeholder-anon-key|$SUPABASE_ANON_KEY_FINAL|g" \
-  -e "s|http://localhost:3000|$SITE_URL_FINAL|g" \
-  {} +
+replace_placeholders_in_dir() {
+  TARGET_DIR="$1"
+  if [ ! -d "$TARGET_DIR" ]; then
+    return 0
+  fi
+
+  find "$TARGET_DIR" -type f \( -name "*.js" -o -name "*.json" \) \
+    ! -path "/app/node_modules/*" \
+    -exec sed -i \
+      -e "s|https://placeholder\.supabase\.co|$SUPABASE_URL_FINAL|g" \
+      -e "s|placeholder-anon-key|$SUPABASE_ANON_KEY_FINAL|g" \
+      -e "s|http://localhost:3000|$SITE_URL_FINAL|g" \
+      {} +
+}
+
+# IMPORTANTE:
+# No output standalone do Next.js, o servidor (ex.: /app/server.js) fica FORA de /app/.next.
+# Então substituímos placeholders em /app inteiro (exclui node_modules) e também em /app/.next.
+replace_placeholders_in_dir /app
+replace_placeholders_in_dir /app/.next
 
 # Substituir API_BASE_URL apenas se não estiver vazio
 if [ -n "$API_BASE_URL_FINAL" ]; then
-  find /app/.next -type f \( -name "*.js" -o -name "*.json" \) -exec sed -i \
-    -e "s|https://placeholder\.api\.base\.url|$API_BASE_URL_FINAL|g" \
-    {} +
+  find /app -type f \( -name "*.js" -o -name "*.json" \) \
+    ! -path "/app/node_modules/*" \
+    -exec sed -i \
+      -e "s|https://placeholder\.api\.base\.url|$API_BASE_URL_FINAL|g" \
+      {} +
 else
   # Se vazio, substitui por string vazia
-  find /app/.next -type f \( -name "*.js" -o -name "*.json" \) -exec sed -i \
-    -e "s|https://placeholder\.api\.base\.url||g" \
-    {} +
+  find /app -type f \( -name "*.js" -o -name "*.json" \) \
+    ! -path "/app/node_modules/*" \
+    -exec sed -i \
+      -e "s|https://placeholder\.api\.base\.url||g" \
+      {} +
 fi
 
 echo "✅ Placeholders substituídos com sucesso!"

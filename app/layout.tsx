@@ -33,8 +33,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const supabaseEnv = {
-    url: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-    anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+    // Prioriza variáveis "server/runtime" (não NEXT_PUBLIC) para evitar valores embutidos no build.
+    // Em produção via Docker/Dokploy, configure SUPABASE_URL / SUPABASE_ANON_KEY (ou NEXT_PUBLIC_*).
+    url: process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
+    anonKey: process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
   };
 
   return (
