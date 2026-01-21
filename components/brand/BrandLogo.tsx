@@ -16,7 +16,7 @@ const LOGOS = {
   },
   symbol: {
     light: "/Autovend IA - Simbolo sem fundo.png",
-    dark: "/Autovend IA - Simbolo sem fundo.png", // Usa filtro CSS para inverter em dark mode
+    dark: "/Autovend IA - Simbolo sem fundo.png",
   },
 } satisfies Record<BrandLogoVariant, { light: string; dark: string }>
 
@@ -31,40 +31,12 @@ export function BrandLogo({
   className?: string
   alt?: string
 }) {
-  const { light, dark } = LOGOS[variant]
+  const { light } = LOGOS[variant]
 
-  if (mode === "light") {
-    return (
-      <span className={className} aria-label={alt} title={alt}>
-        <img src={light} alt={alt} className="block w-full h-full object-contain" />
-      </span>
-    )
-  }
-
-  if (mode === "dark") {
-    return (
-      <span className={className} aria-label={alt} title={alt}>
-        <img src={dark} alt={alt} className="block w-full h-full object-contain" />
-      </span>
-    )
-  }
-
-  // Para o símbolo, aplicar filtro de inversão em dark mode (já que não temos versão branca)
-  const needsInvert = variant === "symbol"
-  
+  // Sempre renderiza a versão colorida original do arquivo
   return (
-    <span className={className} aria-label={alt} title={alt}>
-      <img 
-        src={light} 
-        alt={alt} 
-        className={`block dark:hidden w-full h-full object-contain`}
-      />
-      <img 
-        src={dark} 
-        alt={alt} 
-        className={`hidden dark:block w-full h-full object-contain ${needsInvert ? 'dark:invert dark:brightness-0' : ''}`}
-      />
+    <span className={`inline-block ${className}`} aria-label={alt} title={alt}>
+      <img src={light} alt={alt} className="w-full h-full object-contain" />
     </span>
   )
 }
-

@@ -7,7 +7,7 @@ export function MarketingNavbar() {
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-md supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
-          <BrandLogo variant="horizontal" className="h-7 w-[170px]" />
+          <BrandLogo variant="horizontal" mode="light" className="h-7 w-[170px]" />
           <span className="sr-only">AUTOVEND IA</span>
         </Link>
 

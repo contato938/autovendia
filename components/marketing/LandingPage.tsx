@@ -17,7 +17,7 @@ export function LandingPage() {
         <section className="container mx-auto pt-20 pb-12 md:pt-32 md:pb-16 text-center space-y-8 relative">
           {/* Marca (reforço visual) */}
           <div className="flex justify-center">
-            <BrandLogo variant="horizontal" className="h-9 w-[220px]" />
+            <BrandLogo variant="horizontal" mode="light" className="h-9 w-[220px]" />
           </div>
 
           <div className="space-y-4 max-w-4xl mx-auto">

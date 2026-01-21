@@ -84,9 +84,9 @@ export default function LoginPage() {
           {/* Painel de marca (marketing) */}
           <div className="hidden md:flex flex-col justify-center rounded-2xl border bg-card p-10 shadow-sm relative overflow-hidden">
             <div className="absolute -right-10 -bottom-10 opacity-10">
-              <BrandLogo variant="symbol" className="h-48 w-48" />
+              <BrandLogo variant="symbol" mode="light" className="h-48 w-48" />
             </div>
-            <BrandLogo variant="vertical" className="h-40 w-40" />
+            <BrandLogo variant="vertical" mode="light" className="h-40 w-40" />
             <h1 className="mt-8 type-h3 text-primary">
               Clique → WhatsApp → Venda, com atribuição real.
             </h1>
@@ -113,10 +113,9 @@ export default function LoginPage() {
           <div className="flex items-center">
             <Card className="w-full max-w-md shadow-xl mx-auto">
               <CardHeader className="space-y-1 text-center">
-                <div className="flex justify-center mb-4">
-                  <BrandLogo variant="symbol" className="h-14 w-14" />
+                <div className="flex justify-center mb-6">
+                  <BrandLogo variant="horizontal" mode="light" className="h-12 w-48" />
                 </div>
-                <CardTitle className="text-2xl font-bold tracking-tight">AUTOVEND IA</CardTitle>
                 <CardDescription>Atribuição completa do clique à venda. Maximize seu ROAS com dados reais.</CardDescription>
               </CardHeader>
               <CardContent>
