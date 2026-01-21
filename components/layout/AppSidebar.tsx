@@ -11,7 +11,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
-  SidebarFooter
+  SidebarFooter,
+  useSidebar
 } from "@/components/ui/sidebar";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -52,20 +53,17 @@ const items = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { state } = useSidebar();
 
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="h-16 flex items-center justify-center border-b border-sidebar-border/50">
-        <div className="flex items-center gap-3 px-4 w-full group-data-[collapsible=icon]:justify-center">
-          <BrandLogo
-            variant="symbol"
-            className="h-8 w-8 shrink-0 group-data-[collapsible=icon]:block hidden"
-          />
-          <BrandLogo
-            variant="horizontal"
-            mode="dark"
-            className="h-7 w-[150px] shrink-0 group-data-[collapsible=icon]:hidden"
-          />
+        <div className="flex items-center gap-3 px-4 w-full justify-center">
+          {state === "collapsed" ? (
+            <BrandLogo variant="symbol" className="h-8 w-8 shrink-0" />
+          ) : (
+            <BrandLogo variant="horizontal" className="h-7 w-[150px] shrink-0" />
+          )}
         </div>
       </SidebarHeader>
       <SidebarContent>
