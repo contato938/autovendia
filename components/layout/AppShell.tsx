@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/useStore';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -14,6 +14,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, setUser, setTenants, setSelectedTenantId } = useStore();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const clearAuthState = useCallback(() => {
+    setUser(null);
+    setTenants([]);
+    setSelectedTenantId('');
+  }, [setSelectedTenantId, setTenants, setUser]);
 
   useEffect(() => {
     // Check auth session and load profile
@@ -24,7 +29,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error || !session) {
-          router.push('/login');
+          clearAuthState();
+          router.replace('/login');
           return;
         }
 
@@ -48,7 +54,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         if (profileError || !profile) {
           console.error('Error loading profile:', profileError);
-          router.push('/login');
+          clearAuthState();
+          router.replace('/login');
           return;
         }
 
@@ -135,7 +142,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         }
       } catch (err) {
         console.error('Auth error:', err);
-        router.push('/login');
+        clearAuthState();
+        router.replace('/login');
       } finally {
         setLoading(false);
       }
@@ -147,10 +155,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (event === 'SIGNED_OUT' || !session) {
-          setUser(null);
-          setTenants([]);
-          setSelectedTenantId('');
-          router.push('/login');
+          clearAuthState();
+          router.replace('/login');
         } else if (event === 'SIGNED_IN' && session) {
           // Reload profile and tenants on sign in
           const { data: profile } = await supabase
@@ -233,7 +239,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [router, setUser]);
+  }, [clearAuthState, router]);
 
   if (loading || !user) {
     return (

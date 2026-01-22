@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { ChevronsUpDown } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
@@ -16,16 +17,36 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { supabase } from '@/lib/supabase/client';
+import { toast } from 'sonner';
 
 export function TopBar() {
-  const { user, setUser, tenants, selectedTenantId, setSelectedTenantId } = useStore();
+  const { user, tenants, selectedTenantId, setSelectedTenantId } = useStore();
   const selectedTenant = tenants.find(t => t.id === selectedTenantId) ?? null;
   const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    router.push('/login');
+    if (isLoggingOut) {
+      return;
+    }
+
+    setIsLoggingOut(true);
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        console.error('Erro ao fazer logoff:', error);
+        toast.error('Não foi possível sair. Tente novamente.');
+        return;
+      }
+
+      router.replace('/login');
+    } catch (err) {
+      console.error('Erro inesperado no logoff:', err);
+      toast.error('Não foi possível sair. Tente novamente.');
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -102,8 +123,12 @@ export function TopBar() {
             Minha Conta
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
-            Sair
+          <DropdownMenuItem
+            onClick={handleLogout}
+            className="text-red-600 focus:text-red-600"
+            disabled={isLoggingOut}
+          >
+            {isLoggingOut ? 'Saindo...' : 'Sair'}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
