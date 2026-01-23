@@ -31,20 +31,37 @@ export function TopBar() {
     }
 
     setIsLoggingOut(true);
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
     try {
-      const { error } = await supabase.auth.signOut();
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error('SIGNOUT_TIMEOUT'));
+        }, 5000);
+      });
+
+      const result = await Promise.race([supabase.auth.signOut(), timeoutPromise]);
+      const { error } = result as { error?: Error | null };
 
       if (error) {
-        console.error('Erro ao fazer logoff:', error);
-        toast.error('Não foi possível sair. Tente novamente.');
-        return;
+        throw error;
       }
 
       router.replace('/login');
     } catch (err) {
       console.error('Erro inesperado no logoff:', err);
-      toast.error('Não foi possível sair. Tente novamente.');
+      const { error: localError } = await supabase.auth.signOut({ scope: 'local' });
+      if (localError) {
+        console.error('Erro ao limpar sessão local:', localError);
+        toast.error('Não foi possível sair. Tente novamente.');
+        return;
+      }
+
+      toast.error('Logoff parcial. Sessão local limpa.');
+      router.replace('/login');
     } finally {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
       setIsLoggingOut(false);
     }
   };
