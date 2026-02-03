@@ -14,7 +14,7 @@ import { CampaignsTable } from './CampaignsTable';
 import { CampaignDetailsDrawer } from './CampaignDetailsDrawer';
 import { FunnelCard } from './FunnelCard';
 import { OpsHealthCard } from './OpsHealthCard';
-import { OfflineConversionsCard } from './OfflineConversionsCard';
+
 import { AlertsCard } from './AlertsCard';
 import { SalesRevenueCard } from './SalesRevenueCard';
 import { CustomersLtvCard } from './CustomersLtvCard';
@@ -103,10 +103,10 @@ export function DashboardGoogleClient() {
   }
 
   return (
-    <div className="p-6 space-y-8 animate-in fade-in duration-500">
+    <div className="p-4 space-y-6 animate-in fade-in duration-500">
       
       {/* Header & Filtros */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-gray-100 pb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-gray-200 pb-6">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Visão Geral</h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -121,7 +121,7 @@ export function DashboardGoogleClient() {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 py-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 py-2">
         <MetricPulse 
           label="Investimento"
           value={`R$ ${summary.marketing.spend.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
@@ -134,14 +134,14 @@ export function DashboardGoogleClient() {
           value={`R$ ${summary.sales.revenue.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
           delta={summary.sales.revenue.deltaPercent}
           icon={TrendingUp}
-          className="border-l-0 md:border-l border-gray-200 md:pl-12"
+          className="border-l-0 md:border-l border-gray-300 md:pl-12"
         />
         <MetricPulse 
           label="ROAS"
           value={`${summary.sales.roas.value.toFixed(2)}x`}
           delta={summary.sales.roas.deltaPercent}
           icon={Target}
-          className="border-l-0 md:border-l border-gray-200 md:pl-12"
+          className="border-l-0 md:border-l border-gray-300 md:pl-12"
         />
       </div>
 
@@ -170,7 +170,7 @@ export function DashboardGoogleClient() {
           </div>
 
           {/* Secondary Metrics Grid (Visual Break) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-gray-100">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-200">
              <div>
                 <h3 className="text-sm font-medium text-gray-500 mb-4 uppercase tracking-wider">Eficiência de Mídia</h3>
                 <KpiGrid 
@@ -202,7 +202,7 @@ export function DashboardGoogleClient() {
 
         {/* Right Column: Health & Operations (4 cols) */}
         <div className="xl:col-span-4 space-y-6">
-          <div className="bg-slate-50/50 p-6 rounded-sm border border-slate-100 h-full">
+          <div className="bg-slate-50/50 p-4 rounded-sm border border-slate-200 h-full">
             <h3 className="text-sm font-semibold text-slate-900 mb-6 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 text-slate-500" />
               Saúde da Operação
@@ -211,7 +211,7 @@ export function DashboardGoogleClient() {
             <div className="space-y-6">
               <AttributionHealthCard attribution={summary.attribution} />
               <OpsHealthCard ops={summary.ops} />
-              <OfflineConversionsCard offline={summary.offline} />
+
             </div>
             
             <div className="mt-8 pt-6 border-t border-slate-200">
@@ -222,7 +222,7 @@ export function DashboardGoogleClient() {
       </div>
 
       {/* ZONE 3: THE DETAIL (Campaigns) */}
-      <div className="pt-8 border-t border-gray-100">
+      <div className="pt-8 border-t border-gray-200">
         <div className="flex items-center justify-between mb-4">
            <h2 className="text-lg font-medium text-gray-900">Detalhamento por Campanha</h2>
         </div>

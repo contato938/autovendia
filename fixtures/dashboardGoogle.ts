@@ -12,7 +12,7 @@ import type {
   CampaignRow,
   AttributionHealth,
   FunnelMetrics,
-  OfflineConversionSummary,
+
 } from '@/types/googleAdsDashboard';
 
 // Helper: gera KpiValue com delta simulado
@@ -192,11 +192,7 @@ export function generateDashboardSummary(): DashboardSummary {
       avgClickToFirstMsgMinutes: 8,
       trackingAlerts: [],
     },
-    offline: {
-      queued: 5,
-      failed: 1,
-      sentToday: 15,
-    },
+
     series,
     campaigns,
     alerts,

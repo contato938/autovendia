@@ -38,7 +38,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         const [profileRes, userTenantsRes] = await Promise.all([
           supabase
             .from('profiles')
-            .select('id, nome, role, tenant_id, avatar_url')
+            .select('id, nome, role, tenant_id, avatar_url, email')
             .eq('id', session.user.id)
             .single(),
           supabase
@@ -57,6 +57,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           clearAuthState();
           router.replace('/login');
           return;
+        }
+
+        // Sync email if missing or different
+        if (session.user.email && profile.email !== session.user.email) {
+          console.log('Syncing email to profile:', session.user.email);
+          await supabase
+            .from('profiles')
+            .update({ email: session.user.email })
+            .eq('id', profile.id);
         }
 
         if (tenantsError) {

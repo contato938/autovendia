@@ -132,13 +132,6 @@ export interface FunnelMetrics {
   purchases: number;
 }
 
-export interface OfflineConversionSummary {
-  queued: number;
-  failed: number;
-  sentToday: number;
-  lastSendAt?: string;
-}
-
 // NOVO FORMATO COMPLETO DO DASHBOARD
 export interface DashboardSummary {
   // Blocos principais
@@ -151,7 +144,6 @@ export interface DashboardSummary {
   // Detalhes existentes
   funnel: FunnelMetrics;
   attribution: AttributionHealth;
-  offline: OfflineConversionSummary;
   
   // Listas
   series: TimeSeriesPoint[];

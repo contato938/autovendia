@@ -53,15 +53,7 @@ const data = {
         { title: 'Pipeline', url: '/pipeline' },
       ],
     },
-    {
-      title: 'Conversão',
-      url: '/conversions',
-      icon: BarChart,
-      items: [
-        { title: 'Offline Conversions', url: '/conversions' },
-        { title: 'Pixel & Tracking', url: '/tracking' },
-      ],
-    },
+
     {
       title: 'Configurações',
       url: '/settings',

@@ -4,7 +4,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { useStore } from '@/store/useStore';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { leadsService } from '@/services/leads';
-import { conversionsService } from '@/services/conversions';
+
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -61,17 +61,7 @@ export function LeadDrawer() {
       queryClient.invalidateQueries({ queryKey: ['leads'] });
       queryClient.invalidateQueries({ queryKey: ['lead', selectedLeadId] });
       
-      // Cria conversão offline
-      if (updatedLead && updatedLead.gclid) {
-        await conversionsService.sendConversion({
-          leadId: updatedLead.id,
-          platform: updatedLead.platform,
-          eventName: 'purchase',
-          value: parseFloat(saleValue),
-          currency: 'BRL',
-          happenedAt: new Date().toISOString()
-        });
-      }
+
       
       toast.success('Venda registrada e conversão enfileirada!');
       setShowSaleForm(false);
