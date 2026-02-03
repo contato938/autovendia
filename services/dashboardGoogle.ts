@@ -12,7 +12,7 @@ export const dashboardGoogleService = {
       
       // Fetch from Supabase RPC - using correct function name
       const { data, error } = await supabase.rpc('dashboard_autovend_summary', {
-        filters: filtersWithTenant,
+        filters: filtersWithTenant as unknown as Record<string, unknown>,
       });
 
       if (error) {
