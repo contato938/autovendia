@@ -1,99 +1,74 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight } from 'lucide-react';
-import type { FunnelMetrics, Kpis } from '@/types/googleAdsDashboard';
+import { ArrowDown } from 'lucide-react';
+import type { FunnelMetrics } from '@/types/googleAdsDashboard';
 
 interface FunnelCardProps {
   funnel: FunnelMetrics;
-  kpis: Kpis;
+  kpis?: any; // legacy compat
 }
 
-export function FunnelCard({ funnel, kpis }: FunnelCardProps) {
-  const whatsappRate = funnel.clicks > 0 ? (funnel.whatsapp_started / funnel.clicks) * 100 : 0;
-  const qualifiedRate = funnel.whatsapp_started > 0 ? (funnel.qualified / funnel.whatsapp_started) * 100 : 0;
-  const purchaseRate = funnel.whatsapp_started > 0 ? (funnel.purchases / funnel.whatsapp_started) * 100 : 0;
+export function FunnelCard({ funnel }: FunnelCardProps) {
+  // Taxas de conversão etapa por etapa
+  const ctr = funnel.impressions > 0 ? (funnel.clicks / funnel.impressions) * 100 : 0;
+  const clickToWhatsapp = funnel.clicks > 0 ? (funnel.whatsapp_started / funnel.clicks) * 100 : 0;
+  const whatsappToQualified = funnel.whatsapp_started > 0 ? (funnel.qualified / funnel.whatsapp_started) * 100 : 0;
+  const qualifiedToPurchase = funnel.qualified > 0 ? (funnel.purchases / funnel.qualified) * 100 : 0;
+  
+  // Taxa global
+  const conversionRate = funnel.clicks > 0 ? (funnel.purchases / funnel.clicks) * 100 : 0;
 
-  const costPerWhatsapp = funnel.whatsapp_started > 0 ? kpis.spend / funnel.whatsapp_started : 0;
-  const costPerPurchase = funnel.purchases > 0 ? kpis.spend / funnel.purchases : 0;
+  const FunnelStep = ({ label, value, subValue, highlight = false }: any) => (
+    <div className={`p-3 rounded-lg border ${highlight ? 'bg-blue-50 border-blue-100' : 'bg-white border-gray-100'}`}>
+      <div className="flex justify-between items-center">
+        <span className="text-sm font-medium text-gray-600">{label}</span>
+        <span className="text-lg font-bold text-gray-900">{value.toLocaleString('pt-BR')}</span>
+      </div>
+      {subValue && <p className="text-xs text-right text-muted-foreground mt-1">{subValue}</p>}
+    </div>
+  );
+
+  const ConversionArrow = ({ rate, label }: { rate: number, label?: string }) => (
+    <div className="flex flex-col items-center justify-center py-1 relative z-10">
+      <ArrowDown className="text-gray-300 h-5 w-5" />
+      <span className="text-xs font-semibold bg-gray-100 px-2 py-0.5 rounded-full text-gray-600 border border-gray-200 mt-[-8px]">
+        {rate.toFixed(1)}% {label}
+      </span>
+    </div>
+  );
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle>Funil AUTOVEND IA</CardTitle>
-        <CardDescription>Da propaganda até a venda confirmada</CardDescription>
+        <CardTitle>Funil de Vendas</CardTitle>
+        <CardDescription>Jornada do cliente: Impressão até Venda</CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {/* Etapa 1: Cliques */}
-          <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium">Cliques (Google)</span>
-                <span className="text-lg font-bold font-kpi tabular-nums">{funnel.clicks.toLocaleString('pt-BR')}</span>
-              </div>
-              <div className="h-3 bg-blue-100 dark:bg-blue-950 rounded-full overflow-hidden">
-                <div className="h-full bg-blue-500" style={{ width: '100%' }} />
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                CPC médio: <span className="font-kpi tabular-nums">R$ {kpis.cpc.toFixed(2)}</span>
-              </div>
-            </div>
-          </div>
+      <CardContent className="space-y-1">
+        
+        {/* Etapa 1: Impressões */}
+        <FunnelStep label="Impressões" value={funnel.impressions} />
+        
+        <ConversionArrow rate={ctr} label="CTR" />
+        
+        {/* Etapa 2: Cliques */}
+        <FunnelStep label="Cliques (Tráfego)" value={funnel.clicks} />
+        
+        <ConversionArrow rate={clickToWhatsapp} label="Conv." />
+        
+        {/* Etapa 3: Conversas */}
+        <FunnelStep label="Conversas Iniciadas" value={funnel.whatsapp_started} highlight />
+        
+        <ConversionArrow rate={whatsappToQualified} label="Qualif." />
+        
+        {/* Etapa 4: Qualificados */}
+        <FunnelStep label="Leads Qualificados" value={funnel.qualified} />
+        
+        <ConversionArrow rate={qualifiedToPurchase} label="Fech." />
+        
+        {/* Etapa 5: Vendas */}
+        <FunnelStep label="Vendas Confirmadas" value={funnel.purchases} highlight />
 
-          <ArrowRight className="h-4 w-4 text-muted-foreground mx-auto" />
-
-          {/* Etapa 2: WhatsApp */}
-          <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium">WhatsApp Iniciado</span>
-                <span className="text-lg font-bold font-kpi tabular-nums">{funnel.whatsapp_started.toLocaleString('pt-BR')}</span>
-              </div>
-              <div className="h-3 bg-green-100 dark:bg-green-950 rounded-full overflow-hidden">
-                <div className="h-full bg-green-500" style={{ width: `${whatsappRate}%` }} />
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                <span className="font-kpi tabular-nums">{whatsappRate.toFixed(1)}%</span> dos cliques •{" "}
-                <span className="font-kpi tabular-nums">R$ {costPerWhatsapp.toFixed(2)}</span> por conversa
-              </div>
-            </div>
-          </div>
-
-          <ArrowRight className="h-4 w-4 text-muted-foreground mx-auto" />
-
-          {/* Etapa 3: Qualificado */}
-          <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium">Qualificado</span>
-                <span className="text-lg font-bold font-kpi tabular-nums">{funnel.qualified.toLocaleString('pt-BR')}</span>
-              </div>
-              <div className="h-3 bg-amber-100 dark:bg-amber-950 rounded-full overflow-hidden">
-                <div className="h-full bg-amber-500" style={{ width: `${qualifiedRate}%` }} />
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                <span className="font-kpi tabular-nums">{qualifiedRate.toFixed(1)}%</span> das conversas
-              </div>
-            </div>
-          </div>
-
-          <ArrowRight className="h-4 w-4 text-muted-foreground mx-auto" />
-
-          {/* Etapa 4: Venda */}
-          <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium">Vendas</span>
-                <span className="text-lg font-bold font-kpi tabular-nums">{funnel.purchases.toLocaleString('pt-BR')}</span>
-              </div>
-              <div className="h-3 bg-purple-100 dark:bg-purple-950 rounded-full overflow-hidden">
-                <div className="h-full bg-purple-500" style={{ width: `${purchaseRate}%` }} />
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                <span className="font-kpi tabular-nums">{purchaseRate.toFixed(1)}%</span> das conversas •{" "}
-                <span className="font-kpi tabular-nums">R$ {costPerPurchase.toFixed(2)}</span> CAC
-              </div>
-            </div>
-          </div>
+        <div className="pt-4 mt-2 text-center text-sm text-gray-500 border-t">
+          Taxa de Conversão Global (Clique → Venda): <span className="font-bold text-gray-900">{conversionRate.toFixed(2)}%</span>
         </div>
       </CardContent>
     </Card>

@@ -1,10 +1,3 @@
-'use client';
-
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -13,132 +6,151 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Search, ArrowUpDown } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ChevronRight, ArrowUpDown } from 'lucide-react';
 import type { CampaignRow } from '@/types/googleAdsDashboard';
+import { useState } from 'react';
 
 interface CampaignsTableProps {
   campaigns: CampaignRow[];
   onCampaignClick: (campaign: CampaignRow) => void;
 }
 
-type SortField = 'spend' | 'whatsapp_started' | 'purchases' | 'roas';
+type SortField = keyof CampaignRow;
 
 export function CampaignsTable({ campaigns, onCampaignClick }: CampaignsTableProps) {
-  const [searchQuery, setSearchQuery] = useState('');
   const [sortField, setSortField] = useState<SortField>('spend');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortField(field);
-      setSortOrder('desc');
+      setSortDirection('desc');
     }
   };
 
-  const filteredAndSorted = campaigns
-    .filter(campaign => 
-      campaign.name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .sort((a, b) => {
-      const multiplier = sortOrder === 'asc' ? 1 : -1;
-      return (a[sortField] - b[sortField]) * multiplier;
-    });
+  const sortedCampaigns = [...campaigns].sort((a, b) => {
+    const aValue = a[sortField];
+    const bValue = b[sortField];
+    
+    // Handle string comparisons if any (mostly numbers here)
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      return sortDirection === 'asc' 
+        ? aValue.localeCompare(bValue) 
+        : bValue.localeCompare(aValue);
+    }
+    
+    // Handle numeric
+    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const getLabelBadge = (label: CampaignRow['label']) => {
+    switch (label) {
+      case 'escalar': 
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200 border-0">Escalar</Badge>;
+      case 'ajustar': 
+        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-0">Ajustar</Badge>;
+      case 'pausar': 
+        return <Badge className="bg-red-100 text-red-800 hover:bg-red-200 border-0">Pausar</Badge>;
+      case 'manter': 
+        return <Badge variant="outline" className="text-gray-600">Manter</Badge>;
+      default:
+        return null; // ou <Badge variant="secondary">Novo</Badge>
+    }
+  };
+
+  const SortHeader = ({ field, label, right = false }: { field: SortField, label: string, right?: boolean }) => (
+    <TableHead 
+      className={`cursor-pointer hover:bg-gray-50 ${right ? 'text-right' : ''}`}
+      onClick={() => handleSort(field)}
+    >
+      <div className={`flex items-center gap-1 ${right ? 'justify-end' : ''}`}>
+        {label}
+        <ArrowUpDown className="h-3 w-3" />
+      </div>
+    </TableHead>
+  );
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Campanhas Google Ads</CardTitle>
-        <CardDescription>Performance orientada a conversa e venda</CardDescription>
-        <div className="pt-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar campanha..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-        </div>
+        <CardTitle>Performance por Campanha</CardTitle>
       </CardHeader>
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
+      <CardContent>
+        <div className="rounded-md border">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Campanha</TableHead>
+                <SortHeader field="name" label="Campanha" />
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right cursor-pointer" onClick={() => handleSort('spend')}>
-                  <div className="flex items-center justify-end gap-1">
-                    Gasto <ArrowUpDown className="h-3 w-3" />
-                  </div>
-                </TableHead>
-                <TableHead className="text-right">Cliques</TableHead>
-                <TableHead className="text-right">CPC</TableHead>
-                <TableHead className="text-right cursor-pointer" onClick={() => handleSort('whatsapp_started')}>
-                  <div className="flex items-center justify-end gap-1">
-                    WhatsApp <ArrowUpDown className="h-3 w-3" />
-                  </div>
-                </TableHead>
-                <TableHead className="text-right">Qualificados</TableHead>
-                <TableHead className="text-right cursor-pointer" onClick={() => handleSort('purchases')}>
-                  <div className="flex items-center justify-end gap-1">
-                    Vendas <ArrowUpDown className="h-3 w-3" />
-                  </div>
-                </TableHead>
-                <TableHead className="text-right">Receita</TableHead>
-                <TableHead className="text-right cursor-pointer" onClick={() => handleSort('roas')}>
-                  <div className="flex items-center justify-end gap-1">
-                    ROAS <ArrowUpDown className="h-3 w-3" />
-                  </div>
-                </TableHead>
+                <TableHead>Sugestão</TableHead>
+                <SortHeader field="spend" label="Invest." right />
+                <SortHeader field="clicks" label="Cliques" right />
+                <SortHeader field="ctr" label="CTR" right />
+                <SortHeader field="whatsapp_started" label="WPP" right />
+                <SortHeader field="purchases" label="Vendas" right />
+                <SortHeader field="cac" label="CAC" right />
+                <SortHeader field="revenue" label="Receita" right />
+                <SortHeader field="revenueSharePct" label="% Rec." right />
+                <SortHeader field="roas" label="ROAS" right />
+                <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredAndSorted.length === 0 ? (
+              {sortedCampaigns.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={10} className="text-center text-muted-foreground py-8">
-                    Nenhuma campanha encontrada
+                  <TableCell colSpan={13} className="h-24 text-center">
+                    Nenhuma campanha encontrada.
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredAndSorted.map((campaign) => (
+                sortedCampaigns.map((campaign) => (
                   <TableRow 
-                    key={campaign.id} 
-                    className="cursor-pointer hover:bg-muted/50"
+                    key={campaign.id}
+                    className="cursor-pointer hover:bg-gray-50"
                     onClick={() => onCampaignClick(campaign)}
                   >
-                    <TableCell className="font-medium max-w-[300px]">
-                      <div className="truncate">{campaign.name}</div>
+                    <TableCell className="font-medium max-w-[200px] truncate" title={campaign.name}>
+                      {campaign.name}
                     </TableCell>
                     <TableCell>
-                      <Badge 
-                        variant={
-                          campaign.status === 'active' ? 'default' : 
-                          campaign.status === 'paused' ? 'secondary' : 
-                          'outline'
-                        }
-                      >
-                        {campaign.status === 'active' ? 'Ativa' : 
-                         campaign.status === 'paused' ? 'Pausada' : 
-                         'Encerrada'}
+                      <Badge variant={campaign.status === 'active' ? 'default' : 'secondary'}>
+                        {campaign.status === 'active' ? 'Ativa' : campaign.status === 'paused' ? 'Pausada' : 'Finalizada'}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {getLabelBadge(campaign.label)}
                     </TableCell>
                     <TableCell className="text-right">
                       R$ {campaign.spend.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </TableCell>
-                    <TableCell className="text-right">{campaign.clicks.toLocaleString('pt-BR')}</TableCell>
-                    <TableCell className="text-right">R$ {campaign.cpc.toFixed(2)}</TableCell>
-                    <TableCell className="text-right font-semibold">{campaign.whatsapp_started}</TableCell>
-                    <TableCell className="text-right">{campaign.qualified}</TableCell>
-                    <TableCell className="text-right font-semibold">{campaign.purchases}</TableCell>
+                    <TableCell className="text-right">{campaign.clicks}</TableCell>
+                    <TableCell className="text-right">{campaign.ctr}%</TableCell>
+                    <TableCell className="text-right">{campaign.whatsapp_started}</TableCell>
+                    <TableCell className="text-right">{campaign.purchases}</TableCell>
+                    <TableCell className="text-right">R$ {campaign.cac}</TableCell>
                     <TableCell className="text-right">
-                      R$ {campaign.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                       R$ {campaign.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </TableCell>
-                    <TableCell className="text-right font-bold">
-                      {campaign.roas > 0 ? `${campaign.roas.toFixed(2)}x` : '-'}
+                    <TableCell className="text-right text-gray-500">
+                      {campaign.revenueSharePct}%
+                    </TableCell>
+                    <TableCell className={`text-right font-medium ${
+                      campaign.roas >= 5 ? 'text-green-600' : 
+                      campaign.roas < 2 ? 'text-red-600' : 'text-yellow-600'
+                    }`}>
+                      {campaign.roas.toFixed(2)}x
+                    </TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))

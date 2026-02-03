@@ -10,47 +10,84 @@ export interface DateRangeFilter {
 
 export interface DashboardFilters {
   dateRange: DateRangeFilter;
+  tenant_id?: string;
   customerId?: string; // Para multi-cliente
 }
 
-// KPIs principais do negócio
-export interface Kpis {
-  spend: number;
-  clicks: number;
-  cpc: number;
-  whatsapp_started: number;
-  qualified: number;
-  purchases: number;
-  revenue: number;
-  roas: number;
+// KPI simples (valor e delta)
+export interface KpiValue {
+  value: number;
+  previousValue?: number;
+  deltaPercent?: number; // Calculado no front ou back: (value - prev) / prev
 }
 
-// Delta vs período anterior
-export interface KpiDelta {
-  spend: number;
-  clicks: number;
-  cpc: number;
-  whatsapp_started: number;
-  qualified: number;
-  purchases: number;
-  revenue: number;
-  roas: number;
-  // Percentual de mudança para cada métrica
-  deltaPercent: {
-    spend: number;
-    clicks: number;
-    cpc: number;
-    whatsapp_started: number;
-    qualified: number;
-    purchases: number;
-    revenue: number;
-    roas: number;
-  };
+// Marketing (Topo do Funil)
+export interface MarketingKpis {
+  spend: KpiValue;
+  impressions: KpiValue;
+  clicks: KpiValue;
+  ctr: KpiValue;
+  cpc: KpiValue;
+  cpm: KpiValue;
+  // Qualidade do Leilão
+  impressionShare: number; // %
+  topImpressionShare: number; // %
+  lostBudgetShare: number; // %
+  lostRankShare: number; // %
 }
 
-// Série temporal para o gráfico
+// Conversão e Operação (Meio do Funil)
+export interface ChannelKpis {
+  whatsapp_started: KpiValue;
+  calls: KpiValue;
+  call_answered_rate: number;
+  click_to_whatsapp_rate: number; // %
+  cost_per_conversation: number; // R$
+}
+
+export interface OpsMetrics {
+  firstResponseAvgMinutes: number;
+  unansweredCount: number;
+  staleCount: number; // >24h
+  responseRate: number; // %
+  followUpRate: number; // %
+  topSellers?: { name: string; conversionRate: number }[]; // mini ranking opcional
+}
+
+// Vendas e Negócio (Fundo do Funil)
+export interface SalesKpis {
+  orders: KpiValue; // Vendas confirmadas
+  revenue: KpiValue;
+  ticket: KpiValue; // Ticket médio
+  cac: KpiValue; // Mídia / Vendas
+  roas: KpiValue; 
+  margin?: number; // Margem bruta estimada
+}
+
+// Clientes e LTV
+export interface CustomerKpis {
+  uniqueCustomers: number;
+  newCustomersPct: number; // %
+  returningCustomersPct: number; // %
+  ltv: number; // Lifetime Value estimado
+  ltvCacRatio: number; // LTV / CAC
+  avgDaysBetweenPurchases?: number;
+}
+
+// Alert System
+export type AlertSeverity = 'critical' | 'warning' | 'info' | 'success';
+
+export interface AlertItem {
+  id: string;
+  severity: AlertSeverity;
+  title: string;
+  detail?: string;
+  metric?: string; // ex: 'ctr', 'roas'
+}
+
+// Série temporal para gráficos
 export interface TimeSeriesPoint {
-  date: string; // ISO date
+  date: string;
   spend: number;
   whatsapp_started: number;
   purchases: number;
@@ -65,52 +102,65 @@ export interface CampaignRow {
   spend: number;
   clicks: number;
   cpc: number;
+  ctr: number; // %
   whatsapp_started: number;
   qualified: number;
   purchases: number;
   revenue: number;
   roas: number;
+  // Campos novos
+  revenueSharePct: number; // % contribuição na receita total
+  cac: number;
+  ltv: number;
+  label?: 'escalar' | 'manter' | 'ajustar' | 'pausar';
 }
 
-// Saúde da atribuição (coração do serviço)
+// Atribuição (Health)
 export interface AttributionHealth {
-  attributedRate: number; // % de leads com gclid/wbraid/gbraid
-  unattributedCount: number; // Leads sem identificador
-  avgClickToFirstMsgMinutes: number; // Tempo médio clique → primeira msg
-  trackingAlerts: string[]; // Alertas de tracking (ex: "Taxa caiu 15% vs ontem")
+  attributedRate: number;
+  unattributedCount: number;
+  avgClickToFirstMsgMinutes: number;
+  trackingAlerts: string[];
 }
 
-// Métricas do funil
 export interface FunnelMetrics {
+  impressions: number;
   clicks: number;
   whatsapp_started: number;
   qualified: number;
+  proposals?: number; // Opcional
   purchases: number;
 }
 
-// Saúde operacional do atendimento
-export interface OpsMetrics {
-  firstResponseAvgMinutes: number; // Tempo médio de 1ª resposta
-  unansweredCount: number; // Conversas sem resposta
-  staleCount: number; // Conversas paradas há X horas
-}
-
-// Sumário de conversões offline
 export interface OfflineConversionSummary {
-  queued: number; // Na fila
-  failed: number; // Com falha
-  sentToday: number; // Enviadas hoje
-  lastSendAt?: string; // Timestamp do último envio (ISO)
+  queued: number;
+  failed: number;
+  sentToday: number;
+  lastSendAt?: string;
 }
 
-// Resposta completa do dashboard
+// NOVO FORMATO COMPLETO DO DASHBOARD
 export interface DashboardSummary {
-  kpis: Kpis;
-  delta: KpiDelta;
-  series: TimeSeriesPoint[];
-  campaigns: CampaignRow[];
-  attribution: AttributionHealth;
-  funnel: FunnelMetrics;
+  // Blocos principais
+  marketing: MarketingKpis;
+  conversion: ChannelKpis;
+  sales: SalesKpis;
+  customers: CustomerKpis;
   ops: OpsMetrics;
+  
+  // Detalhes existentes
+  funnel: FunnelMetrics;
+  attribution: AttributionHealth;
   offline: OfflineConversionSummary;
+  
+  // Listas
+  series: TimeSeriesPoint[];
+  campaigns: CampaignRow[]; // Tabela expandida
+  alerts: AlertItem[];
+  
+  // Legacy / Compatibilidade (opcional, manter se quiser facilitar refactor progressivo)
+  // Mas a ideia é migrar tudo para os blocos acima.
+  // Vou comentar para forçar o uso dos novos, mas se quebrar muito eu reativo.
+  kpis?: any; 
+  delta?: any;
 }

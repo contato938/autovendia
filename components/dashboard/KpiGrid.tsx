@@ -1,76 +1,81 @@
 import { KPICard } from './KPICard';
-import { DollarSign, MousePointerClick, MessageSquare, UserCheck, ShoppingCart, TrendingUp } from 'lucide-react';
-import type { Kpis, KpiDelta } from '@/types/googleAdsDashboard';
+import { LucideIcon } from 'lucide-react';
+import type { KpiValue } from '@/types/googleAdsDashboard';
 
-interface KpiGridProps {
-  kpis: Kpis;
-  delta: KpiDelta;
+export interface KpiItemConfig {
+  title: string;
+  value: number | string;
+  icon: LucideIcon;
+  kpiValue?: KpiValue; // Se passar o objeto completo KpiValue, usa o delta dele
+  deltaPercent?: number; // Ou passa direto o delta
+  format?: 'currency' | 'number' | 'percent' | 'decimal';
+  trendReversed?: boolean; // Se true, queda é bom (ex: CPC, custo)
 }
 
-export function KpiGrid({ kpis, delta }: KpiGridProps) {
-  const formatTrend = (value: number) => {
+interface KpiGridProps {
+  title?: string;
+  items: KpiItemConfig[];
+  columns?: 2 | 3 | 4 | 5 | 6;
+}
+
+export function KpiGrid({ title, items, columns = 4 }: KpiGridProps) {
+  const formatValue = (val: number | string, fmt: string | undefined) => {
+    if (typeof val === 'string') return val;
+    if (fmt === 'currency') return `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+    if (fmt === 'percent') return `${val.toFixed(1)}%`;
+    if (fmt === 'decimal') return val.toFixed(2);
+    return val.toLocaleString('pt-BR');
+  };
+
+  const formatTrend = (value: number | undefined) => {
+    if (value === undefined || value === null) return undefined;
     const sign = value >= 0 ? '+' : '';
     return `${sign}${value.toFixed(1)}%`;
   };
 
+  const getColsClass = (cols: number) => {
+    switch(cols) {
+      case 2: return 'md:grid-cols-2';
+      case 3: return 'md:grid-cols-2 lg:grid-cols-3';
+      case 4: return 'md:grid-cols-2 lg:grid-cols-4';
+      case 5: return 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5';
+      case 6: return 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6';
+      default: return 'md:grid-cols-2 lg:grid-cols-4';
+    }
+  };
+
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-      <KPICard
-        title="Investimento"
-        value={`R$ ${kpis.spend.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
-        icon={DollarSign}
-        trend={formatTrend(delta.deltaPercent.spend)}
-        trendUp={delta.deltaPercent.spend >= 0}
-      />
-      <KPICard
-        title="Cliques"
-        value={kpis.clicks.toLocaleString('pt-BR')}
-        icon={MousePointerClick}
-        trend={formatTrend(delta.deltaPercent.clicks)}
-        trendUp={delta.deltaPercent.clicks >= 0}
-      />
-      <KPICard
-        title="Conversas WhatsApp"
-        value={kpis.whatsapp_started.toLocaleString('pt-BR')}
-        icon={MessageSquare}
-        trend={formatTrend(delta.deltaPercent.whatsapp_started)}
-        trendUp={delta.deltaPercent.whatsapp_started >= 0}
-      />
-      <KPICard
-        title="Leads Qualificados"
-        value={kpis.qualified.toLocaleString('pt-BR')}
-        icon={UserCheck}
-        trend={formatTrend(delta.deltaPercent.qualified)}
-        trendUp={delta.deltaPercent.qualified >= 0}
-      />
-      <KPICard
-        title="Vendas"
-        value={kpis.purchases.toLocaleString('pt-BR')}
-        icon={ShoppingCart}
-        trend={formatTrend(delta.deltaPercent.purchases)}
-        trendUp={delta.deltaPercent.purchases >= 0}
-      />
-      <KPICard
-        title="Receita"
-        value={`R$ ${kpis.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
-        icon={DollarSign}
-        trend={formatTrend(delta.deltaPercent.revenue)}
-        trendUp={delta.deltaPercent.revenue >= 0}
-      />
-      <KPICard
-        title="CPC"
-        value={`R$ ${kpis.cpc.toFixed(2)}`}
-        icon={MousePointerClick}
-        trend={formatTrend(delta.deltaPercent.cpc)}
-        trendUp={delta.deltaPercent.cpc >= 0}
-      />
-      <KPICard
-        title="ROAS"
-        value={`${kpis.roas.toFixed(2)}x`}
-        icon={TrendingUp}
-        trend={formatTrend(delta.deltaPercent.roas)}
-        trendUp={delta.deltaPercent.roas >= 0}
-      />
+    <div className="space-y-4">
+      {title && <h3 className="text-lg font-medium tracking-tight text-gray-900">{title}</h3>}
+      <div className={`grid gap-4 ${getColsClass(columns)}`}>
+        {items.map((item, index) => {
+          const delta = item.kpiValue?.deltaPercent ?? item.deltaPercent;
+          const displayValue = item.kpiValue?.value ?? item.value;
+          
+          // Lógica de trendUp:
+          // Se trendReversed is true: delta < 0 is GOOD (green)
+          // Se trendReversed is false: delta > 0 is GOOD (green)
+          // KPICard geralmente usa trendUp=true para verde.
+          // Então se trendReversed, trendUp = delta < 0
+          
+          let trendUp = delta !== undefined ? delta >= 0 : undefined;
+          
+          if (item.trendReversed && delta !== undefined) {
+             trendUp = delta <= 0;
+          }
+
+          return (
+            <KPICard
+              key={index}
+              title={item.title}
+              value={formatValue(displayValue, item.format)}
+              icon={item.icon}
+              trend={formatTrend(delta)}
+              trendUp={trendUp}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }

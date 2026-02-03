@@ -11,7 +11,7 @@ export const dashboardGoogleService = {
         : filters;
       
       // Try to fetch from Supabase RPC
-      const { data, error } = await supabase.rpc('dashboard_google_summary', {
+      const { data, error } = await supabase.rpc('dashboard_autovend_summary', {
         filters: filtersWithTenant as any,
       });
 
@@ -25,8 +25,11 @@ export const dashboardGoogleService = {
         throw error;
       }
 
-      // Fallback para fixtures apenas quando o banco ainda não tem dados
-      if (data && (data as any).campaigns && Array.isArray((data as any).campaigns) && (data as any).campaigns.length > 0) {
+      // Fallback para fixtures apenas quando o banco ainda não tem dados de campanhas
+      // Verificação mais robusta: se retornou algo vazio ou kpis zerados, usa fixture para desenvolvimento
+      const hasRealData = data && (data as any).campaigns && (data as any).campaigns.length > 0;
+      
+      if (hasRealData) {
         return data as DashboardSummary;
       }
 

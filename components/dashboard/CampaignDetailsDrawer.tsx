@@ -1,11 +1,12 @@
-'use client';
-
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { TrendingUp, DollarSign, MousePointerClick, MessageSquare, ShoppingCart } from 'lucide-react';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
 import type { CampaignRow } from '@/types/googleAdsDashboard';
+import { Separator } from '@/components/ui/separator';
 
 interface CampaignDetailsDrawerProps {
   campaign: CampaignRow | null;
@@ -16,111 +17,85 @@ interface CampaignDetailsDrawerProps {
 export function CampaignDetailsDrawer({ campaign, isOpen, onClose }: CampaignDetailsDrawerProps) {
   if (!campaign) return null;
 
-  const conversionRate = campaign.clicks > 0 ? (campaign.whatsapp_started / campaign.clicks) * 100 : 0;
-  const saleRate = campaign.whatsapp_started > 0 ? (campaign.purchases / campaign.whatsapp_started) * 100 : 0;
-
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
+      <SheetContent className="sm:max-w-xl overflow-y-auto">
         <SheetHeader>
-          <SheetTitle className="text-xl">{campaign.name}</SheetTitle>
-          <div className="flex items-center gap-2 pt-2">
-            <Badge 
-              variant={
-                campaign.status === 'active' ? 'default' : 
-                campaign.status === 'paused' ? 'secondary' : 
-                'outline'
-              }
-            >
-              {campaign.status === 'active' ? 'Ativa' : 
-               campaign.status === 'paused' ? 'Pausada' : 
-               'Encerrada'}
-            </Badge>
-          </div>
+          <SheetTitle>{campaign.name}</SheetTitle>
+          <SheetDescription>
+            Detalhes de performance e leads atribuídos
+          </SheetDescription>
         </SheetHeader>
-
+        
         <div className="mt-6 space-y-6">
-          {/* Resumo de Performance */}
-          <div>
-            <h3 className="font-semibold text-lg mb-3">Performance</h3>
-            <div className="grid grid-cols-2 gap-3">
-              <Card>
-                <CardContent className="pt-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    <div className="text-sm text-muted-foreground">Investimento</div>
-                  </div>
-                  <div className="text-xl font-bold">
-                    R$ {campaign.spend.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="pt-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <MousePointerClick className="h-4 w-4 text-muted-foreground" />
-                    <div className="text-sm text-muted-foreground">Cliques</div>
-                  </div>
-                  <div className="text-xl font-bold">{campaign.clicks.toLocaleString('pt-BR')}</div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    CPC: R$ {campaign.cpc.toFixed(2)}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="pt-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                    <div className="text-sm text-muted-foreground">WhatsApp</div>
-                  </div>
-                  <div className="text-xl font-bold">{campaign.whatsapp_started}</div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    {conversionRate.toFixed(1)}% dos cliques
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="pt-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                    <div className="text-sm text-muted-foreground">Vendas</div>
-                  </div>
-                  <div className="text-xl font-bold">{campaign.purchases}</div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    {saleRate.toFixed(1)}% das conversas
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="col-span-2 bg-primary/5">
-                <CardContent className="pt-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <TrendingUp className="h-4 w-4 text-primary" />
-                    <div className="text-sm text-muted-foreground">ROAS</div>
-                  </div>
-                  <div className="text-2xl font-bold text-primary">
-                    {campaign.roas > 0 ? `${campaign.roas.toFixed(2)}x` : '-'}
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    Receita: R$ {campaign.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                  </div>
-                </CardContent>
-              </Card>
+          {/* Métricas Principais */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <span className="text-sm text-muted-foreground">Investimento</span>
+              <p className="text-2xl font-bold">R$ {campaign.spend.toLocaleString('pt-BR')}</p>
+            </div>
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <span className="text-sm text-muted-foreground">Receita</span>
+              <p className="text-2xl font-bold">R$ {campaign.revenue.toLocaleString('pt-BR')}</p>
+            </div>
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <span className="text-sm text-muted-foreground">ROAS</span>
+              <p className={`text-2xl font-bold ${
+                campaign.roas >= 4 ? 'text-green-600' : 'text-yellow-600'
+              }`}>
+                {campaign.roas.toFixed(2)}x
+              </p>
+            </div>
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <span className="text-sm text-muted-foreground">CAC</span>
+              <p className="text-2xl font-bold">R$ {campaign.cac}</p>
             </div>
           </div>
-
+          
           <Separator />
-
-          {/* Conversas e Leads Atribuídos (placeholder) */}
+          
+          {/* Detalhes de Conversão */}
           <div>
-            <h3 className="font-semibold text-lg mb-3">Últimas Conversas Atribuídas</h3>
-            <div className="text-sm text-muted-foreground text-center py-8 bg-muted/30 rounded-lg">
-              <MessageSquare className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              Detalhes de conversas em breve
+            <h4 className="font-medium mb-3">Funil da Campanha</h4>
+            <div className="space-y-4 text-sm">
+              <div className="flex justify-between items-center">
+                <span>Cliques</span>
+                <span className="font-medium">{campaign.clicks} (CTR: {campaign.ctr}%)</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>Conversas Iniciadas</span>
+                <span className="font-medium">{campaign.whatsapp_started}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>Leads Qualificados</span>
+                <span className="font-medium">{campaign.qualified}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>Vendas</span>
+                <span className="font-medium">{campaign.purchases} (LTV Médio: R$ {campaign.ltv})</span>
+              </div>
             </div>
+          </div>
+          
+          <Separator />
+          
+           {/* Placeholder for leads list - Future Iteration: Fetch real leads */}
+          <div>
+            <h4 className="font-medium mb-3">Últimas Vendas</h4>
+            <p className="text-sm text-muted-foreground mb-2">
+              Esta funcionalidade será ativada em breve para mostrar os leads individuais desta campanha.
+            </p>
+             <div className="space-y-2">
+                {[1, 2, 3].map(i => (
+                    <div key={i} className="flex justify-between p-3 border rounded-md bg-white">
+                        <div className="flex flex-col">
+                            <span className="font-medium">Cliente Exemplo {i}</span>
+                            <span className="text-xs text-gray-500">Há {i} dias</span>
+                        </div>
+                        <span className="font-medium text-green-600">R$ {1500 + i * 100},00</span>
+                    </div>
+                ))}
+             </div>
           </div>
         </div>
       </SheetContent>
