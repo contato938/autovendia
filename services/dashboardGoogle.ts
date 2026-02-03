@@ -11,7 +11,7 @@ export const dashboardGoogleService = {
         : filters;
       
       // Try to fetch from Supabase RPC
-      const { data, error } = await supabase.rpc('dashboard_autovend_summary', {
+      const { data, error } = await supabase.rpc('dashboard_google_summary', {
         filters: filtersWithTenant as any,
       });
 
