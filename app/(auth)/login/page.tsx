@@ -28,7 +28,10 @@ export default function LoginPage() {
           router.replace('/dashboard');
         }
       } catch (error) {
-        console.error('Error checking session:', error);
+        // Only log in development to prevent credential leaks
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error checking session:', error);
+        }
       } finally {
         setCheckingSession(false);
       }

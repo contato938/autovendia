@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { leadsService } from '@/services/leads';
@@ -55,6 +55,7 @@ export function LeadPipelineBoard() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [board, setBoard] = useState<BoardState>(emptyBoard);
+  const [isDragging, setIsDragging] = useState(false);
 
   const { data: leads = [], isLoading, isError } = useQuery({
     queryKey: ['leads', selectedTenantId],
@@ -68,7 +69,7 @@ export function LeadPipelineBoard() {
     return map;
   }, [leads]);
 
-  const matchesSearch = (lead: Lead) => {
+  const matchesSearch = useCallback((lead: Lead) => {
     const q = normalizeText(searchQuery);
     if (!q) return true;
 
@@ -77,12 +78,13 @@ export function LeadPipelineBoard() {
     const campaign = normalizeText(lead.campaignName || '');
 
     return name.includes(q) || phone.includes(normalizePhone(q)) || campaign.includes(q);
-  };
+  }, [searchQuery]);
 
   const updateStageMutation = useMutation({
     mutationFn: ({ id, stage }: { id: string; stage: LeadStage }) =>
       leadsService.updateLeadStage(id, stage),
     onMutate: async ({ id, stage }) => {
+      // Cancel any in-flight queries to prevent race conditions
       await queryClient.cancelQueries({ queryKey: ['leads', selectedTenantId] });
       const previous = queryClient.getQueryData<Lead[]>(['leads', selectedTenantId]);
 
@@ -100,9 +102,11 @@ export function LeadPipelineBoard() {
         queryClient.setQueryData(['leads', selectedTenantId], ctx.previous);
       }
       toast.error('Falha ao atualizar etapa. Reverti a mudança.');
+      setIsDragging(false);
     },
     onSuccess: () => {
       toast.success('Etapa atualizada!');
+      setIsDragging(false);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['leads', selectedTenantId] });
@@ -136,14 +140,14 @@ export function LeadPipelineBoard() {
     });
   }, [leads]);
 
-  const getVisibleIds = (stage: LeadStage, currentBoard: BoardState) => {
+  const getVisibleIds = useCallback((stage: LeadStage, currentBoard: BoardState) => {
     const ids = currentBoard[stage] || [];
     return ids.filter((id) => {
       const lead = leadById.get(id);
       if (!lead) return false;
       return matchesSearch(lead);
     });
-  };
+  }, [leadById, matchesSearch]);
 
   const insertByVisibleIndex = (
     destStage: LeadStage,
@@ -173,12 +177,20 @@ export function LeadPipelineBoard() {
 
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
+    setIsDragging(false);
+    
     if (!destination) return;
 
     const fromStage = source.droppableId as LeadStage;
     const toStage = destination.droppableId as LeadStage;
 
     if (!STAGES.includes(fromStage) || !STAGES.includes(toStage)) return;
+    
+    // Prevent concurrent mutations
+    if (updateStageMutation.isPending) {
+      toast.error('Aguarde a operação anterior finalizar');
+      return;
+    }
 
     setBoard((prev) => {
       const next: BoardState = {
@@ -209,7 +221,7 @@ export function LeadPipelineBoard() {
     }
   };
 
-  const stageStats = (stage: LeadStage) => {
+  const stageStats = useCallback((stage: LeadStage) => {
     const ids = board[stage] || [];
     let count = 0;
     let total = 0;
@@ -223,7 +235,7 @@ export function LeadPipelineBoard() {
     }
 
     return { count, total };
-  };
+  }, [board, leadById, matchesSearch]);
 
   if (isLoading) {
     return (

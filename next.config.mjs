@@ -16,6 +16,17 @@ const nextConfig = {
     root: __dirname,
   },
 
+  // Image optimization configuration
+  images: {
+    formats: ['image/webp', 'image/avif'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+    minimumCacheTTL: 31536000, // 1 year for optimized images
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
+
   async headers() {
     return [
       {
@@ -69,6 +80,11 @@ const nextConfig = {
   experimental: {
     turbopackUseSystemTlsCerts: true,
   },
+
+  // Performance optimizations
+  compress: true, // Enable gzip/brotli compression
+  poweredByHeader: false, // Remove X-Powered-By header
+  reactStrictMode: true, // Help identify re-renders and side effects
 };
 
 export default nextConfig;

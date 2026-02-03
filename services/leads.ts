@@ -33,17 +33,44 @@ function mapDbLeadToLead(dbLead: any): Lead {
 }
 
 export const leadsService = {
-  listLeads: async (tenantId?: string): Promise<Lead[]> => {
+  listLeads: async (tenantId?: string, limit = 100, offset = 0): Promise<Lead[]> => {
     let query = supabase
       .from('leads')
-      .select('*');
+      .select(`
+        id,
+        name,
+        phone,
+        created_at,
+        stage,
+        platform,
+        campaign_id,
+        campaign_name,
+        adset_name,
+        creative_name,
+        gclid,
+        fbclid,
+        utm_source,
+        utm_campaign,
+        utm_medium,
+        utm_content,
+        first_message_at,
+        last_message_at,
+        sale_value,
+        sale_currency,
+        sale_happened_at,
+        sale_status,
+        tenant_id,
+        updated_at
+      `);
     
     // Filter by tenant if provided
     if (tenantId) {
       query = query.eq('tenant_id', tenantId);
     }
     
-    const { data, error } = await query.order('created_at', { ascending: false });
+    const { data, error } = await query
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1); // Paginação
 
     if (error) {
       console.error('Error fetching leads:', error);

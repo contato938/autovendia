@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -18,10 +18,10 @@ interface DashboardFiltersProps {
   isLoading?: boolean;
 }
 
-export function DashboardFilters({ filters, onFiltersChange, onRefresh, isLoading }: DashboardFiltersProps) {
+export const DashboardFiltersComponent = ({ filters, onFiltersChange, onRefresh, isLoading }: DashboardFiltersProps) => {
   const [showCustomRange, setShowCustomRange] = useState(false);
 
-  const handlePresetChange = (preset: DateRangePreset) => {
+  const handlePresetChange = useCallback((preset: DateRangePreset) => {
     if (preset === 'custom') {
       setShowCustomRange(true);
     } else {
@@ -31,7 +31,25 @@ export function DashboardFilters({ filters, onFiltersChange, onRefresh, isLoadin
         dateRange: { preset },
       });
     }
-  };
+  }, [filters, onFiltersChange]);
+
+  const handleFromDateSelect = useCallback((date: Date | undefined) => {
+    if (date) {
+      onFiltersChange({
+        ...filters,
+        dateRange: { ...filters.dateRange, from: format(date, 'yyyy-MM-dd') },
+      });
+    }
+  }, [filters, onFiltersChange]);
+
+  const handleToDateSelect = useCallback((date: Date | undefined) => {
+    if (date) {
+      onFiltersChange({
+        ...filters,
+        dateRange: { ...filters.dateRange, to: format(date, 'yyyy-MM-dd') },
+      });
+    }
+  }, [filters, onFiltersChange]);
 
   const currentPreset = filters.dateRange.preset || 'custom';
 
@@ -74,14 +92,7 @@ export function DashboardFilters({ filters, onFiltersChange, onRefresh, isLoadin
                     <Calendar
                       mode="single"
                       selected={filters.dateRange.from ? new Date(filters.dateRange.from) : undefined}
-                      onSelect={(date) => {
-                        if (date) {
-                          onFiltersChange({
-                            ...filters,
-                            dateRange: { ...filters.dateRange, from: format(date, 'yyyy-MM-dd') },
-                          });
-                        }
-                      }}
+                      onSelect={handleFromDateSelect}
                       initialFocus
                     />
                   </PopoverContent>
@@ -101,14 +112,7 @@ export function DashboardFilters({ filters, onFiltersChange, onRefresh, isLoadin
                     <Calendar
                       mode="single"
                       selected={filters.dateRange.to ? new Date(filters.dateRange.to) : undefined}
-                      onSelect={(date) => {
-                        if (date) {
-                          onFiltersChange({
-                            ...filters,
-                            dateRange: { ...filters.dateRange, to: format(date, 'yyyy-MM-dd') },
-                          });
-                        }
-                      }}
+                      onSelect={handleToDateSelect}
                       initialFocus
                     />
                   </PopoverContent>
@@ -125,4 +129,7 @@ export function DashboardFilters({ filters, onFiltersChange, onRefresh, isLoadin
       </CardContent>
     </Card>
   );
-}
+};
+
+// Memoize the component to prevent unnecessary re-renders
+export const DashboardFilters = memo(DashboardFiltersComponent);
