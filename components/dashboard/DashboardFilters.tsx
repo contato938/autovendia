@@ -9,11 +9,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import type { DateRangePreset, DashboardFilters } from '@/types/googleAdsDashboard';
+import type { DateRangePreset, DashboardFilters as DashboardFiltersType } from '@/types/googleAdsDashboard';
 
 interface DashboardFiltersProps {
-  filters: DashboardFilters;
-  onFiltersChange: (filters: DashboardFilters) => void;
+  filters: DashboardFiltersType;
+  onFiltersChange: (filters: DashboardFiltersType) => void;
   onRefresh: () => void;
   isLoading?: boolean;
 }
