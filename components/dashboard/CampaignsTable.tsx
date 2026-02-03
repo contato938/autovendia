@@ -90,9 +90,9 @@ export function CampaignsTable({ campaigns, onCampaignClick }: CampaignsTablePro
       <CardHeader>
         <CardTitle>Performance por Campanha</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="rounded-md border">
-          <Table>
+      <CardContent className="p-0 sm:p-6">
+        <div className="rounded-none sm:rounded-md border-x-0 sm:border border-b-0 sm:border-b overflow-x-auto">
+          <Table className="whitespace-nowrap">
             <TableHeader>
               <TableRow>
                 <SortHeader field="name" label="Campanha" />
@@ -165,6 +165,7 @@ export function CampaignsTable({ campaigns, onCampaignClick }: CampaignsTablePro
               )}
             </TableBody>
           </Table>
+
         </div>
       </CardContent>
     </Card>

@@ -116,7 +116,6 @@ export function DashboardGoogleClient() {
         />
       </div>
 
-      {/* ZONE 1: NORTH STAR METRICS (THE PULSE) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 py-2">
         <MetricPulse 
           label="Investimento"
@@ -127,15 +126,15 @@ export function DashboardGoogleClient() {
         />
         <MetricPulse 
           label="Receita Gerada"
-          value={`R$ ${summary.marketing.revenue.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
-          delta={summary.marketing.revenue.deltaPercent}
+          value={`R$ ${summary.sales.revenue.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+          delta={summary.sales.revenue.deltaPercent}
           icon={TrendingUp}
           className="border-l-0 md:border-l border-gray-200 md:pl-12"
         />
         <MetricPulse 
           label="ROAS"
-          value={`${summary.marketing.roas.value.toFixed(2)}x`}
-          delta={summary.marketing.roas.deltaPercent}
+          value={`${summary.sales.roas.value.toFixed(2)}x`}
+          delta={summary.sales.roas.deltaPercent}
           icon={Target}
           className="border-l-0 md:border-l border-gray-200 md:pl-12"
         />
@@ -186,8 +185,8 @@ export function DashboardGoogleClient() {
                   items={[
                     { title: 'Impressões', value: summary.marketing.impressions.value, kpiValue: summary.marketing.impressions, icon: Eye, format: 'number' },
                     { title: 'Conversas Iniciadas', value: summary.conversion.whatsapp_started.value, kpiValue: summary.conversion.whatsapp_started, icon: MessageSquare, format: 'number' },
-                    { title: 'Leads Qualificados', value: summary.conversion.qualified.value, kpiValue: summary.conversion.qualified, icon: UserCheck, format: 'number' },
-                    { title: 'Vendas Totais', value: summary.marketing.purchases.value, kpiValue: summary.marketing.purchases, icon: CreditCard, format: 'number' },
+                    { title: 'Leads Qualificados', value: summary.funnel.qualified, icon: UserCheck, format: 'number' },
+                    { title: 'Vendas Totais', value: summary.sales.orders.value, kpiValue: summary.sales.orders, icon: CreditCard, format: 'number' },
                   ]} 
                   columns={2}
                   variant="minimal"

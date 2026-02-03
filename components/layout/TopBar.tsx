@@ -93,6 +93,19 @@ export function TopBar() {
              </div>
              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
+
+        </DropdownMenuTrigger>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="icon" className="md:hidden h-9 w-9 p-0 rounded-full overflow-hidden border-border/50">
+             <Avatar className="h-full w-full">
+               {selectedTenant?.logoUrl ? (
+                 <AvatarImage src={selectedTenant.logoUrl} alt={selectedTenant.nome} />
+               ) : null}
+               <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+                 {selectedTenant?.nome?.charAt(0) || '!'}
+               </AvatarFallback>
+             </Avatar>
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-[200px]">
           {tenants.length > 0 ? (
