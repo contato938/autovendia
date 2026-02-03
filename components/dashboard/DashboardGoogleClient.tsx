@@ -18,12 +18,12 @@ import { OfflineConversionsCard } from './OfflineConversionsCard';
 import { AlertsCard } from './AlertsCard';
 import { SalesRevenueCard } from './SalesRevenueCard';
 import { CustomersLtvCard } from './CustomersLtvCard';
-import type { DashboardFilters as FilterType, CampaignRow } from '@/types/googleAdsDashboard';
+import type { DashboardFilters as DashboardFiltersType, CampaignRow } from '@/types/googleAdsDashboard';
 import { useStore } from '@/store/useStore';
 import { MousePointerClick, TrendingUp, DollarSign, Eye, MessageSquare, Phone, UserCheck } from 'lucide-react';
 
 export function DashboardGoogleClient() {
-  const [filters, setFilters] = useState<FilterType>({
+  const [filters, setFilters] = useState<DashboardFiltersType>({
     dateRange: { preset: '30d' },
   });
   const { selectedTenantId } = useStore();
