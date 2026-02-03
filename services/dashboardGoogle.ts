@@ -10,11 +10,7 @@ export const dashboardGoogleService = {
         ? { ...filters, tenant_id: tenantId }
         : filters;
       
-      // TODO: Update RPC 'dashboard_google_summary' to return new DashboardSummary structure
-      // Current RPC returns old format (kpis, delta) but frontend expects new format (marketing, sales, etc.)
-      // For now, we'll use fixtures to avoid runtime errors
-      
-      // Try to fetch from Supabase RPC just to verify connection and tenant access
+      // Fetch from Supabase RPC - now returns correct DashboardSummary structure
       const { data, error } = await supabase.rpc('dashboard_google_summary', {
         filters: filtersWithTenant as any,
       });
@@ -26,23 +22,19 @@ export const dashboardGoogleService = {
           details: (error as any).details,
           hint: (error as any).hint,
         });
-        // Don't throw - use fixture fallback instead
+        // Fallback to fixtures on RPC error
+        return generateDashboardSummary();
       }
 
-      // TEMPORARY: Always use fixtures until RPC is updated to match DashboardSummary interface
-      // The RPC currently returns { kpis, delta, series, campaigns, ... }
-      // But frontend expects { marketing, conversion, sales, customers, ops, ... }
-      // This mismatch causes runtime errors like "Cannot read property 'value' of undefined"
-      
-      // Generate fixture with real campaign count from DB if available
-      const fixture = generateDashboardSummary();
-      
-      // If RPC returned campaigns, use that count to show real data exists
-      if (data && (data as any).campaigns && Array.isArray((data as any).campaigns)) {
-        console.log(`[Dashboard] Using fixtures (${(data as any).campaigns.length} real campaigns in DB)`);
+      // Validate the response has the expected structure
+      if (data && data.marketing && data.sales && data.campaigns) {
+        console.log(`[Dashboard] Using real data (${data.campaigns.length} campaigns)`);
+        return data as DashboardSummary;
       }
-      
-      return fixture;
+
+      // Fallback to fixtures if RPC returned empty/invalid data
+      console.log('[Dashboard] RPC returned incomplete data, using fixtures');
+      return generateDashboardSummary();
     } catch (error) {
       console.error('[Dashboard] Error fetching data:', error);
       // Fallback to fixtures on any error
