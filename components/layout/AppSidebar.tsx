@@ -26,6 +26,7 @@ import { NavMain } from '@/components/layout/nav-main';
 import { NavProjects } from '@/components/layout/nav-projects';
 import { NavUser } from '@/components/layout/nav-user';
 import { TeamSwitcher } from '@/components/layout/team-switcher';
+import { useStore } from '@/store/useStore';
 import {
   Sidebar,
   SidebarContent,
@@ -36,11 +37,6 @@ import {
 
 // This is sample data.
 const data = {
-  user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
-  },
   teams: [
     {
       name: 'Acme Inc',
@@ -120,6 +116,8 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useStore();
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -130,7 +128,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user ? {
+          name: user.nome,
+          email: user.email,
+          avatar: user.avatarUrl || '/avatars/default.jpg'
+        } : undefined} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
