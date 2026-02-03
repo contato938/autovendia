@@ -48,22 +48,22 @@ export function DashboardGoogleClient() {
   const marketingItems: KpiItemConfig[] = useMemo(() => {
     if (!summary) return [];
     return [
-      { title: 'Investimento (Ads)', value: summary.marketing.spend.value, kpiValue: summary.marketing.spend, icon: DollarSign, format: 'currency' },
-      { title: 'Impressões', value: summary.marketing.impressions.value, kpiValue: summary.marketing.impressions, icon: Eye, format: 'number' },
-      { title: 'Cliques', value: summary.marketing.clicks.value, kpiValue: summary.marketing.clicks, icon: MousePointerClick, format: 'number' },
-      { title: 'CTR', value: summary.marketing.ctr.value, kpiValue: summary.marketing.ctr, icon: MousePointerClick, format: 'percent' },
-      { title: 'CPC Médio', value: summary.marketing.cpc.value, kpiValue: summary.marketing.cpc, icon: MousePointerClick, format: 'currency', trendReversed: true },
-      { title: 'CPM', value: summary.marketing.cpm.value, kpiValue: summary.marketing.cpm, icon: DollarSign, format: 'currency', trendReversed: true },
+      { title: 'Investimento (Ads)', value: summary.marketing?.spend?.value ?? 0, kpiValue: summary.marketing?.spend, icon: DollarSign, format: 'currency' },
+      { title: 'Impressões', value: summary.marketing?.impressions?.value ?? 0, kpiValue: summary.marketing?.impressions, icon: Eye, format: 'number' },
+      { title: 'Cliques', value: summary.marketing?.clicks?.value ?? 0, kpiValue: summary.marketing?.clicks, icon: MousePointerClick, format: 'number' },
+      { title: 'CTR', value: summary.marketing?.ctr?.value ?? 0, kpiValue: summary.marketing?.ctr, icon: MousePointerClick, format: 'percent' },
+      { title: 'CPC Médio', value: summary.marketing?.cpc?.value ?? 0, kpiValue: summary.marketing?.cpc, icon: MousePointerClick, format: 'currency', trendReversed: true },
+      { title: 'CPM', value: summary.marketing?.cpm?.value ?? 0, kpiValue: summary.marketing?.cpm, icon: DollarSign, format: 'currency', trendReversed: true },
     ];
   }, [summary]);
 
   const channelItems: KpiItemConfig[] = useMemo(() => {
     if (!summary) return [];
     return [
-      { title: 'WhatsApp Iniciados', value: summary.conversion.whatsapp_started.value, kpiValue: summary.conversion.whatsapp_started, icon: MessageSquare, format: 'number' },
-      { title: 'Ligações', value: summary.conversion.calls.value, kpiValue: summary.conversion.calls, icon: Phone, format: 'number' },
-      { title: 'Custo/Conversa', value: summary.conversion.cost_per_conversation, icon: DollarSign, format: 'currency', trendReversed: true },
-      { title: 'Taxa Clique→WhatsApp', value: summary.conversion.click_to_whatsapp_rate, icon: TrendingUp, format: 'percent' },
+      { title: 'WhatsApp Iniciados', value: summary.conversion?.whatsapp_started?.value ?? 0, kpiValue: summary.conversion?.whatsapp_started, icon: MessageSquare, format: 'number' },
+      { title: 'Ligações', value: summary.conversion?.calls?.value ?? 0, kpiValue: summary.conversion?.calls, icon: Phone, format: 'number' },
+      { title: 'Custo/Conversa', value: summary.conversion?.cost_per_conversation ?? 0, icon: DollarSign, format: 'currency', trendReversed: true },
+      { title: 'Taxa Clique→WhatsApp', value: summary.conversion?.click_to_whatsapp_rate ?? 0, icon: TrendingUp, format: 'percent' },
     ];
   }, [summary]);
 
@@ -129,7 +129,7 @@ export function DashboardGoogleClient() {
         />
       </div>
 
-      {(!summary.marketing.spend.value && summary.campaigns.length === 0) && (
+      {(!summary.marketing?.spend?.value && summary.campaigns?.length === 0) && (
         <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-md animate-in slide-in-from-top-2 duration-300">
           <div className="flex">
             <div className="shrink-0">
@@ -151,22 +151,22 @@ export function DashboardGoogleClient() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 py-2">
         <MetricPulse 
           label="Investimento"
-          value={`R$ ${summary.marketing.spend.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
-          delta={summary.marketing.spend.deltaPercent}
+          value={`R$ ${(summary.marketing?.spend?.value ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+          delta={summary.marketing?.spend?.deltaPercent ?? 0}
           trendReversed={true}
           icon={DollarSign}
         />
         <MetricPulse 
           label="Receita Gerada"
-          value={`R$ ${summary.sales.revenue.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
-          delta={summary.sales.revenue.deltaPercent}
+          value={`R$ ${(summary.sales?.revenue?.value ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+          delta={summary.sales?.revenue?.deltaPercent ?? 0}
           icon={TrendingUp}
           className="border-l-0 md:border-l border-gray-300 md:pl-12"
         />
         <MetricPulse 
           label="ROAS"
-          value={`${summary.sales.roas.value.toFixed(2)}x`}
-          delta={summary.sales.roas.deltaPercent}
+          value={`${(summary.sales?.roas?.value ?? 0).toFixed(2)}x`}
+          delta={summary.sales?.roas?.deltaPercent ?? 0}
           icon={Target}
           className="border-l-0 md:border-l border-gray-300 md:pl-12"
         />
@@ -202,10 +202,10 @@ export function DashboardGoogleClient() {
                 <h3 className="text-sm font-medium text-gray-500 mb-4 uppercase tracking-wider">Eficiência de Mídia</h3>
                 <KpiGrid 
                   items={[
-                    { title: 'CPC Médio', value: summary.marketing.cpc.value, kpiValue: summary.marketing.cpc, icon: MousePointerClick, format: 'currency', trendReversed: true },
-                    { title: 'CTR', value: summary.marketing.ctr.value, kpiValue: summary.marketing.ctr, icon: MousePointerClick, format: 'percent' },
-                    { title: 'Custo/Conversa', value: summary.conversion.cost_per_conversation, icon: MessageSquare, format: 'currency', trendReversed: true },
-                    { title: 'Taxa Clique→Whats', value: summary.conversion.click_to_whatsapp_rate, icon: UserCheck, format: 'percent' },
+                    { title: 'CPC Médio', value: summary.marketing?.cpc?.value ?? 0, kpiValue: summary.marketing?.cpc, icon: MousePointerClick, format: 'currency', trendReversed: true },
+                    { title: 'CTR', value: summary.marketing?.ctr?.value ?? 0, kpiValue: summary.marketing?.ctr, icon: MousePointerClick, format: 'percent' },
+                    { title: 'Custo/Conversa', value: summary.conversion?.cost_per_conversation ?? 0, icon: MessageSquare, format: 'currency', trendReversed: true },
+                    { title: 'Taxa Clique→Whats', value: summary.conversion?.click_to_whatsapp_rate ?? 0, icon: UserCheck, format: 'percent' },
                   ]} 
                   columns={2}
                   variant="minimal"
@@ -215,10 +215,10 @@ export function DashboardGoogleClient() {
                 <h3 className="text-sm font-medium text-gray-500 mb-4 uppercase tracking-wider">Volume</h3>
                 <KpiGrid 
                   items={[
-                    { title: 'Impressões', value: summary.marketing.impressions.value, kpiValue: summary.marketing.impressions, icon: Eye, format: 'number' },
-                    { title: 'Conversas Iniciadas', value: summary.conversion.whatsapp_started.value, kpiValue: summary.conversion.whatsapp_started, icon: MessageSquare, format: 'number' },
-                    { title: 'Leads Qualificados', value: summary.funnel.qualified, icon: UserCheck, format: 'number' },
-                    { title: 'Vendas Totais', value: summary.sales.orders.value, kpiValue: summary.sales.orders, icon: CreditCard, format: 'number' },
+                    { title: 'Impressões', value: summary.marketing?.impressions?.value ?? 0, kpiValue: summary.marketing?.impressions, icon: Eye, format: 'number' },
+                    { title: 'Conversas Iniciadas', value: summary.conversion?.whatsapp_started?.value ?? 0, kpiValue: summary.conversion?.whatsapp_started, icon: MessageSquare, format: 'number' },
+                    { title: 'Leads Qualificados', value: summary.funnel?.qualified ?? 0, icon: UserCheck, format: 'number' },
+                    { title: 'Vendas Totais', value: summary.sales?.orders?.value ?? 0, kpiValue: summary.sales?.orders, icon: CreditCard, format: 'number' },
                   ]} 
                   columns={2}
                   variant="minimal"
