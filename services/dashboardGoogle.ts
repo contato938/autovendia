@@ -1,5 +1,6 @@
 import type { DashboardFilters, DashboardSummary } from '@/types/googleAdsDashboard';
 import { supabase } from '@/lib/supabase/client';
+import { logger } from '@/lib/logger';
 
 export const dashboardGoogleService = {
   getDashboardSummary: async (filters: DashboardFilters, tenantId?: string): Promise<DashboardSummary> => {
@@ -15,7 +16,7 @@ export const dashboardGoogleService = {
       });
 
       if (error) {
-        console.error('[Dashboard] RPC error:', {
+        logger.error('[Dashboard] RPC error', {
           code: error.code,
           message: error.message,
           details: error.details,
@@ -26,14 +27,14 @@ export const dashboardGoogleService = {
 
       // Validate the response has the expected structure
       if (!data || !data.marketing || !data.sales) {
-        console.error('[Dashboard] Invalid RPC response structure:', data);
+        logger.error('[Dashboard] Invalid RPC response structure', { data });
         throw new Error('Resposta inválida do servidor');
       }
 
-      console.log(`[Dashboard] Loaded successfully (${data.campaigns?.length || 0} campaigns)`);
+      logger.info(`[Dashboard] Loaded successfully`, { campaignCount: data.campaigns?.length || 0 });
       return data as DashboardSummary;
-    } catch (error) {
-      console.error('[Dashboard] Error fetching data:', error);
+    } catch (error: any) {
+      logger.error('[Dashboard] Error fetching data', { error: error.message });
       throw error;
     }
   },

@@ -129,6 +129,25 @@ export function DashboardGoogleClient() {
         />
       </div>
 
+      {(!summary.marketing.spend.value && summary.campaigns.length === 0) && (
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-md animate-in slide-in-from-top-2 duration-300">
+          <div className="flex">
+            <div className="shrink-0">
+              <AlertCircle className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-yellow-800">Nenhum dado encontrado</h3>
+              <div className="mt-2 text-sm text-yellow-700">
+                <p>
+                  Não encontramos dados de campanhas ou vendas para este período. 
+                  Verifique se suas contas de anúncio estão conectadas e se o período selecionado possui atividade.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 py-2">
         <MetricPulse 
           label="Investimento"

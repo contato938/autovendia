@@ -431,6 +431,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      dashboard_autovend_summary: {
+        Args: {
+          filters: Json
+        }
+        Returns: DashboardSummary
+      }
       dashboard_google_summary: {
         Args: {
           filters: Json
