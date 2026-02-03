@@ -57,14 +57,12 @@ const CollapsibleTrigger = React.forwardRef<
     onOpenChange?.(!open)
   }
 
-  const Comp = asChild ? React.Slot : "button" as any
-
-  if (asChild) {
-     return (
-        <div onClick={handleClick as any}>
-            {children}
-        </div>
-     )
+  // If asChild is true, just wrap children in a div with onClick
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children as React.ReactElement<any>, {
+      onClick: handleClick,
+      'data-state': open ? 'open' : 'closed',
+    })
   }
 
   return (

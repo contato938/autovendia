@@ -37,6 +37,11 @@ export function CampaignsTable({ campaigns, onCampaignClick }: CampaignsTablePro
     const aValue = a[sortField];
     const bValue = b[sortField];
     
+    // Handle undefined values
+    if (aValue === undefined && bValue === undefined) return 0;
+    if (aValue === undefined) return 1;
+    if (bValue === undefined) return -1;
+    
     // Handle string comparisons if any (mostly numbers here)
     if (typeof aValue === 'string' && typeof bValue === 'string') {
       return sortDirection === 'asc' 
@@ -45,8 +50,11 @@ export function CampaignsTable({ campaigns, onCampaignClick }: CampaignsTablePro
     }
     
     // Handle numeric
-    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+    if (typeof aValue === 'number' && typeof bValue === 'number') {
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+    }
+    
     return 0;
   });
 

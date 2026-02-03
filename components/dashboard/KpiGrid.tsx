@@ -1,4 +1,3 @@
-import { KPICard } from './KPICard';
 import { LucideIcon } from 'lucide-react';
 import type { KpiValue } from '@/types/googleAdsDashboard';
 
