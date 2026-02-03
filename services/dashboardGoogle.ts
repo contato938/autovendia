@@ -1,6 +1,5 @@
 import type { DashboardFilters, DashboardSummary } from '@/types/googleAdsDashboard';
 import { supabase } from '@/lib/supabase/client';
-import { generateDashboardSummary } from '@/fixtures/dashboardGoogle';
 
 export const dashboardGoogleService = {
   getDashboardSummary: async (filters: DashboardFilters, tenantId?: string): Promise<DashboardSummary> => {
@@ -10,35 +9,32 @@ export const dashboardGoogleService = {
         ? { ...filters, tenant_id: tenantId }
         : filters;
       
-      // Fetch from Supabase RPC - now returns correct DashboardSummary structure
-      const { data, error } = await supabase.rpc('dashboard_google_summary', {
-        filters: filtersWithTenant as any,
+      // Fetch from Supabase RPC - using correct function name
+      const { data, error } = await supabase.rpc('dashboard_autovend_summary', {
+        filters: filtersWithTenant,
       });
 
       if (error) {
-        console.error('Dashboard RPC error:', {
-          code: (error as any).code,
-          message: (error as any).message,
-          details: (error as any).details,
-          hint: (error as any).hint,
+        console.error('[Dashboard] RPC error:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
         });
-        // Fallback to fixtures on RPC error
-        return generateDashboardSummary();
+        throw new Error(`Erro ao carregar dashboard: ${error.message}`);
       }
 
       // Validate the response has the expected structure
-      if (data && data.marketing && data.sales && data.campaigns) {
-        console.log(`[Dashboard] Using real data (${data.campaigns.length} campaigns)`);
-        return data as DashboardSummary;
+      if (!data || !data.marketing || !data.sales) {
+        console.error('[Dashboard] Invalid RPC response structure:', data);
+        throw new Error('Resposta inválida do servidor');
       }
 
-      // Fallback to fixtures if RPC returned empty/invalid data
-      console.log('[Dashboard] RPC returned incomplete data, using fixtures');
-      return generateDashboardSummary();
+      console.log(`[Dashboard] Loaded successfully (${data.campaigns?.length || 0} campaigns)`);
+      return data as DashboardSummary;
     } catch (error) {
       console.error('[Dashboard] Error fetching data:', error);
-      // Fallback to fixtures on any error
-      return generateDashboardSummary();
+      throw error;
     }
   },
 };

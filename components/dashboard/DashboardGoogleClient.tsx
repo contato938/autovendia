@@ -74,13 +74,21 @@ export function DashboardGoogleClient() {
           <h1 className="text-3xl font-bold tracking-tight">Dashboard Google Ads</h1>
           <p className="text-muted-foreground">Monitoramento completo de performance e rentabilidade</p>
         </div>
-        <Card>
+        <Card className="border-destructive">
           <CardHeader className="flex flex-row items-center justify-between gap-4">
-            <CardTitle>Falha ao carregar dados</CardTitle>
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-destructive" />
+              <CardTitle className="text-destructive">Erro ao carregar dashboard</CardTitle>
+            </div>
             <Button onClick={() => refetch()} variant="outline">Tentar novamente</Button>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            Erro na conexão com o banco de dados.
+          <CardContent className="space-y-2">
+            <p className="text-sm text-muted-foreground">
+              {error instanceof Error ? error.message : 'Erro desconhecido ao carregar dados'}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Verifique se suas integrações estão configuradas corretamente ou se há dados disponíveis no período selecionado.
+            </p>
           </CardContent>
         </Card>
       </div>
