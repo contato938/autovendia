@@ -20,7 +20,8 @@ import { SalesRevenueCard } from './SalesRevenueCard';
 import { CustomersLtvCard } from './CustomersLtvCard';
 import type { DashboardFilters as DashboardFiltersType, CampaignRow } from '@/types/googleAdsDashboard';
 import { useStore } from '@/store/useStore';
-import { MousePointerClick, TrendingUp, DollarSign, Eye, MessageSquare, Phone, UserCheck } from 'lucide-react';
+import { MousePointerClick, TrendingUp, DollarSign, Eye, MessageSquare, Phone, UserCheck, Target, CreditCard, BarChart3, AlertCircle } from 'lucide-react';
+import { MetricPulse } from './MetricPulse';
 
 export function DashboardGoogleClient() {
   const [filters, setFilters] = useState<DashboardFiltersType>({
@@ -100,11 +101,11 @@ export function DashboardGoogleClient() {
     <div className="p-6 space-y-8 animate-in fade-in duration-500">
       
       {/* Header & Filtros */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-gray-100 pb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard de Gestão</h1>
-          <p className="text-muted-foreground mt-1">
-             Visão unificada: Marketing, Vendas e Operação.
+          <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Visão Geral</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+             Performance unificada Google Ads & Operação
           </p>
         </div>
         <DashboardFilters
@@ -115,56 +116,112 @@ export function DashboardGoogleClient() {
         />
       </div>
 
-      {/* Seção 1: Alertas (Inteligentes) */}
+      {/* ZONE 1: NORTH STAR METRICS (THE PULSE) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 py-2">
+        <MetricPulse 
+          label="Investimento"
+          value={`R$ ${summary.marketing.spend.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+          delta={summary.marketing.spend.deltaPercent}
+          trendReversed={true}
+          icon={DollarSign}
+        />
+        <MetricPulse 
+          label="Receita Gerada"
+          value={`R$ ${summary.marketing.revenue.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+          delta={summary.marketing.revenue.deltaPercent}
+          icon={TrendingUp}
+          className="border-l-0 md:border-l border-gray-200 md:pl-12"
+        />
+        <MetricPulse 
+          label="ROAS"
+          value={`${summary.marketing.roas.value.toFixed(2)}x`}
+          delta={summary.marketing.roas.deltaPercent}
+          icon={Target}
+          className="border-l-0 md:border-l border-gray-200 md:pl-12"
+        />
+      </div>
+
+      {/* Alertas (Inteligentes) - only if critical */}
       {summary.alerts && summary.alerts.length > 0 && (
-        <AlertsCard alerts={summary.alerts} />
+        <div className="animate-in fade-in slide-in-from-top-2">
+           <AlertsCard alerts={summary.alerts} />
+        </div>
       )}
 
-      {/* Seção 2: Marketing & Topo de Funil */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-slate-800 border-l-4 border-blue-500 pl-3">Marketing & Aquisição</h2>
-        <KpiGrid items={marketingItems} columns={6} />
-        <div className="grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2">
+      {/* ZONE 2: THE FLOW (Deep Dive) */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+        
+        {/* Left Column: Acquisition Flow (8 cols) */}
+        <div className="xl:col-span-8 space-y-8">
+          
+          {/* Chart Section */}
+          <div className="bg-white rounded-none">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-gray-400" />
+                Tendência de Performance
+              </h2>
+            </div>
             <TrendChart data={summary.series} />
           </div>
-          <div className="lg:col-span-1">
-             <AttributionHealthCard attribution={summary.attribution} />
+
+          {/* Secondary Metrics Grid (Visual Break) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-gray-100">
+             <div>
+                <h3 className="text-sm font-medium text-gray-500 mb-4 uppercase tracking-wider">Eficiência de Mídia</h3>
+                <KpiGrid 
+                  items={[
+                    { title: 'CPC Médio', value: summary.marketing.cpc.value, kpiValue: summary.marketing.cpc, icon: MousePointerClick, format: 'currency', trendReversed: true },
+                    { title: 'CTR', value: summary.marketing.ctr.value, kpiValue: summary.marketing.ctr, icon: MousePointerClick, format: 'percent' },
+                    { title: 'Custo/Conversa', value: summary.conversion.cost_per_conversation, icon: MessageSquare, format: 'currency', trendReversed: true },
+                    { title: 'Taxa Clique→Whats', value: summary.conversion.click_to_whatsapp_rate, icon: UserCheck, format: 'percent' },
+                  ]} 
+                  columns={2}
+                  variant="minimal"
+                />
+             </div>
+             <div>
+                <h3 className="text-sm font-medium text-gray-500 mb-4 uppercase tracking-wider">Volume</h3>
+                <KpiGrid 
+                  items={[
+                    { title: 'Impressões', value: summary.marketing.impressions.value, kpiValue: summary.marketing.impressions, icon: Eye, format: 'number' },
+                    { title: 'Conversas Iniciadas', value: summary.conversion.whatsapp_started.value, kpiValue: summary.conversion.whatsapp_started, icon: MessageSquare, format: 'number' },
+                    { title: 'Leads Qualificados', value: summary.conversion.qualified.value, kpiValue: summary.conversion.qualified, icon: UserCheck, format: 'number' },
+                    { title: 'Vendas Totais', value: summary.marketing.purchases.value, kpiValue: summary.marketing.purchases, icon: CreditCard, format: 'number' },
+                  ]} 
+                  columns={2}
+                  variant="minimal"
+                />
+             </div>
+          </div>
+        </div>
+
+        {/* Right Column: Health & Operations (4 cols) */}
+        <div className="xl:col-span-4 space-y-6">
+          <div className="bg-slate-50/50 p-6 rounded-sm border border-slate-100 h-full">
+            <h3 className="text-sm font-semibold text-slate-900 mb-6 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-slate-500" />
+              Saúde da Operação
+            </h3>
+            
+            <div className="space-y-6">
+              <AttributionHealthCard attribution={summary.attribution} />
+              <OpsHealthCard ops={summary.ops} />
+              <OfflineConversionsCard offline={summary.offline} />
+            </div>
+            
+            <div className="mt-8 pt-6 border-t border-slate-200">
+               <FunnelCard funnel={summary.funnel} />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Seção 3: Conversão & Operação */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-slate-800 border-l-4 border-green-500 pl-3">Conversão & Operação</h2>
-        <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-4">
-          <div className="xl:col-span-2">
-             <KpiGrid title="Canais" items={channelItems} columns={2} />
-          </div>
-          <CustimizedOpsCard summary={summary} /> 
-          {/* Note: Funnel takes distinct space */}
+      {/* ZONE 3: THE DETAIL (Campaigns) */}
+      <div className="pt-8 border-t border-gray-100">
+        <div className="flex items-center justify-between mb-4">
+           <h2 className="text-lg font-medium text-gray-900">Detalhamento por Campanha</h2>
         </div>
-        <div className="grid gap-6 lg:grid-cols-2">
-          <FunnelCard funnel={summary.funnel} />
-          <div className="space-y-6">
-             <OpsHealthCard ops={summary.ops} />
-             <OfflineConversionsCard offline={summary.offline} />
-          </div>
-        </div>
-      </div>
-
-      {/* Seção 4: Negócio & Vendas */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-slate-800 border-l-4 border-purple-500 pl-3">Receita & Clientes</h2>
-        <div className="grid gap-6 lg:grid-cols-2">
-           <SalesRevenueCard sales={summary.sales} />
-           <CustomersLtvCard customers={summary.customers} />
-        </div>
-      </div>
-
-      {/* Seção 5: Campanhas */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-slate-800 border-l-4 border-gray-500 pl-3">Detalhe por Campanha</h2>
         <CampaignsTable 
           campaigns={summary.campaigns} 
           onCampaignClick={handleCampaignClick}

@@ -62,6 +62,10 @@ export default function LoginPage() {
 
       if (data.session) {
         toast.success('Login realizado com sucesso!');
+        
+        // Small delay to ensure session is fully propagated
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
         router.replace('/dashboard');
       }
     } catch (err: any) {

@@ -141,7 +141,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           console.log(`[AppShell] bootstrap ${(t1 - t0).toFixed(0)}ms`);
         }
       } catch (err) {
-        console.error('Auth error:', err);
+        // Enhanced error logging for debugging
+        console.error('[AppShell] Auth error:', err);
+        console.error('[AppShell] Error details:', {
+          message: err instanceof Error ? err.message : 'Unknown error',
+          stack: err instanceof Error ? err.stack : undefined,
+        });
         clearAuthState();
         router.replace('/login');
       } finally {
