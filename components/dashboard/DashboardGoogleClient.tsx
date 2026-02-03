@@ -44,6 +44,29 @@ export function DashboardGoogleClient() {
     setIsDrawerOpen(true);
   }, []);
 
+  // useMemo hooks MUST be called before any conditional returns (React rules of hooks)
+  const marketingItems: KpiItemConfig[] = useMemo(() => {
+    if (!summary) return [];
+    return [
+      { title: 'Investimento (Ads)', value: summary.marketing.spend.value, kpiValue: summary.marketing.spend, icon: DollarSign, format: 'currency' },
+      { title: 'Impressões', value: summary.marketing.impressions.value, kpiValue: summary.marketing.impressions, icon: Eye, format: 'number' },
+      { title: 'Cliques', value: summary.marketing.clicks.value, kpiValue: summary.marketing.clicks, icon: MousePointerClick, format: 'number' },
+      { title: 'CTR', value: summary.marketing.ctr.value, kpiValue: summary.marketing.ctr, icon: MousePointerClick, format: 'percent' },
+      { title: 'CPC Médio', value: summary.marketing.cpc.value, kpiValue: summary.marketing.cpc, icon: MousePointerClick, format: 'currency', trendReversed: true },
+      { title: 'CPM', value: summary.marketing.cpm.value, kpiValue: summary.marketing.cpm, icon: DollarSign, format: 'currency', trendReversed: true },
+    ];
+  }, [summary]);
+
+  const channelItems: KpiItemConfig[] = useMemo(() => {
+    if (!summary) return [];
+    return [
+      { title: 'WhatsApp Iniciados', value: summary.conversion.whatsapp_started.value, kpiValue: summary.conversion.whatsapp_started, icon: MessageSquare, format: 'number' },
+      { title: 'Ligações', value: summary.conversion.calls.value, kpiValue: summary.conversion.calls, icon: Phone, format: 'number' },
+      { title: 'Custo/Conversa', value: summary.conversion.cost_per_conversation, icon: DollarSign, format: 'currency', trendReversed: true },
+      { title: 'Taxa Clique→WhatsApp', value: summary.conversion.click_to_whatsapp_rate, icon: TrendingUp, format: 'percent' },
+    ];
+  }, [summary]);
+
   if (error) {
     return (
       <div className="p-6 space-y-6">
@@ -78,24 +101,6 @@ export function DashboardGoogleClient() {
       </div>
     );
   }
-
-  // Preparar Items para KpiGrid (Marketing) - Memoizado para evitar recriação
-  const marketingItems: KpiItemConfig[] = useMemo(() => [
-    { title: 'Investimento (Ads)', value: summary.marketing.spend.value, kpiValue: summary.marketing.spend, icon: DollarSign, format: 'currency' },
-    { title: 'Impressões', value: summary.marketing.impressions.value, kpiValue: summary.marketing.impressions, icon: Eye, format: 'number' },
-    { title: 'Cliques', value: summary.marketing.clicks.value, kpiValue: summary.marketing.clicks, icon: MousePointerClick, format: 'number' },
-    { title: 'CTR', value: summary.marketing.ctr.value, kpiValue: summary.marketing.ctr, icon: MousePointerClick, format: 'percent' },
-    { title: 'CPC Médio', value: summary.marketing.cpc.value, kpiValue: summary.marketing.cpc, icon: MousePointerClick, format: 'currency', trendReversed: true },
-    { title: 'CPM', value: summary.marketing.cpm.value, kpiValue: summary.marketing.cpm, icon: DollarSign, format: 'currency', trendReversed: true },
-  ], [summary.marketing]);
-
-  // Preparar Items para KpiGrid (Canais / Conversão) - Memoizado para evitar recriação
-  const channelItems: KpiItemConfig[] = useMemo(() => [
-    { title: 'WhatsApp Iniciados', value: summary.conversion.whatsapp_started.value, kpiValue: summary.conversion.whatsapp_started, icon: MessageSquare, format: 'number' },
-    { title: 'Ligações', value: summary.conversion.calls.value, kpiValue: summary.conversion.calls, icon: Phone, format: 'number' },
-    { title: 'Custo/Conversa', value: summary.conversion.cost_per_conversation, icon: DollarSign, format: 'currency', trendReversed: true },
-    { title: 'Taxa Clique→WhatsApp', value: summary.conversion.click_to_whatsapp_rate, icon: TrendingUp, format: 'percent' },
-  ], [summary.conversion]);
 
   return (
     <div className="p-6 space-y-8 animate-in fade-in duration-500">

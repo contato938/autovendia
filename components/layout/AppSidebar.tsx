@@ -101,7 +101,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavUser user={user ? {
           name: user.nome,
           email: user.email,
-          avatar: user.avatarUrl || '/avatars/default.jpg'
+          avatar: user.avatarUrl || ''
         } : undefined} />
       </SidebarFooter>
       <SidebarRail />
