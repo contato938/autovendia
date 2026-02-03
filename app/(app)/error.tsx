@@ -14,14 +14,18 @@ export default function AppError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log error to error reporting service
+    // ALWAYS log error for debugging
+    console.error('[AppError] Caught error:', error);
+    console.error('[AppError] Error message:', error.message);
+    console.error('[AppError] Error stack:', error.stack);
+    
+    // Log error to error reporting service in production
     if (process.env.NODE_ENV === 'production') {
       // TODO: Send to error reporting service
       // Sentry.captureException(error);
-    } else {
-      console.error('App error:', error);
     }
   }, [error]);
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
