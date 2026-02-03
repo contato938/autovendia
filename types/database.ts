@@ -437,6 +437,12 @@ export type Database = {
         }
         Returns: DashboardSummary
       }
+      get_user_id_by_email: {
+        Args: {
+          email_input: string
+        }
+        Returns: string | null
+      }
     }
     Enums: {
       [_ in never]: never
