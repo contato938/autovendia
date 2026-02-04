@@ -14,6 +14,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, setUser, setTenants, setSelectedTenantId } = useStore();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
   const clearAuthState = useCallback(() => {
     setUser(null);
     setTenants([]);
@@ -165,6 +166,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
     loadUserSession();
 
+    // Safety timeout: if loading takes more than 10s, something went wrong
+    const timeoutId = setTimeout(() => {
+      if (loading) {
+        console.error('[AppShell] Loading timeout exceeded - forcing logout');
+        setLoadingTimeout(true);
+        setLoading(false);
+        clearAuthState();
+        router.replace('/login');
+      }
+    }, 10000);
+
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
@@ -251,9 +263,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     );
 
     return () => {
+      clearTimeout(timeoutId);
       subscription.unsubscribe();
     };
-  }, [clearAuthState, router]);
+  }, [clearAuthState, router, setUser, setTenants, setSelectedTenantId]);
 
   if (loading || !user) {
     return (
@@ -263,7 +276,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="h-2 w-48 rounded-full bg-muted overflow-hidden">
             <div className="h-full w-1/2 bg-primary/40 animate-pulse" />
           </div>
-          <p className="text-sm text-muted-foreground">Carregando sua área logada…</p>
+          <p className="text-sm text-muted-foreground">
+            {loadingTimeout 
+              ? 'Tempo limite excedido. Redirecionando...' 
+              : 'Carregando sua área logada…'}
+          </p>
         </div>
       </div>
     ); // feedback visual enquanto carrega
