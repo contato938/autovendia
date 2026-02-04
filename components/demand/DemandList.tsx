@@ -117,7 +117,7 @@ export function DemandList() {
       case 'resolved':
         return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Resolvido</Badge>;
       case 'ignored':
-        return <Badge variant="ghost" className="text-muted-foreground">Ignorado</Badge>;
+        return <Badge variant="outline" className="text-muted-foreground">Ignorado</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
