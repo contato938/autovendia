@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/useStore';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -15,6 +15,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [loadingTimeout, setLoadingTimeout] = useState(false);
+  const loadingRef = useRef(true); // Track loading state for timeout closure
   const clearAuthState = useCallback(() => {
     setUser(null);
     setTenants([]);
@@ -161,6 +162,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         router.replace('/login');
       } finally {
         setLoading(false);
+        loadingRef.current = false; // Sync ref with state
       }
     };
 
@@ -168,10 +170,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
     // Safety timeout: if loading takes more than 10s, something went wrong
     const timeoutId = setTimeout(() => {
-      if (loading) {
+      if (loadingRef.current) { // Check ref instead of closure variable
         console.error('[AppShell] Loading timeout exceeded - forcing logout');
         setLoadingTimeout(true);
         setLoading(false);
+        loadingRef.current = false;
         clearAuthState();
         router.replace('/login');
       }
