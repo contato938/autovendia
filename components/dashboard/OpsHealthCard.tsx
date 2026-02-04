@@ -8,7 +8,13 @@ interface OpsHealthCardProps {
 }
 
 export function OpsHealthCard({ ops }: OpsHealthCardProps) {
-  const isHealthy = ops.firstResponseAvgMinutes < 60 && ops.unansweredCount < 10;
+  // Safe defaults
+  const firstResponseAvgMinutes = ops?.firstResponseAvgMinutes ?? 0;
+  const unansweredCount = ops?.unansweredCount ?? 0;
+  const responseRate = ops?.responseRate ?? 0;
+  const followUpRate = ops?.followUpRate ?? 0;
+
+  const isHealthy = firstResponseAvgMinutes < 60 && unansweredCount < 10;
 
   return (
     <Card className={isHealthy ? '' : 'border-amber-500 border-2'}>
@@ -25,14 +31,14 @@ export function OpsHealthCard({ ops }: OpsHealthCardProps) {
             <span className="text-sm text-muted-foreground flex items-center gap-1">
               <Clock className="w-4 h-4" /> Tempo de 1ª Resp.
             </span>
-            <p className="text-2xl font-bold">{ops.firstResponseAvgMinutes} min</p>
+            <p className="text-2xl font-bold">{firstResponseAvgMinutes} min</p>
           </div>
           
           <div className="space-y-1">
             <span className="text-sm text-muted-foreground flex items-center gap-1">
               <MessageSquare className="w-4 h-4" /> Sem Resposta
             </span>
-            <p className="text-2xl font-bold">{ops.unansweredCount}</p>
+            <p className="text-2xl font-bold">{unansweredCount}</p>
           </div>
         </div>
 
@@ -40,17 +46,17 @@ export function OpsHealthCard({ ops }: OpsHealthCardProps) {
           <div>
             <div className="flex justify-between text-sm mb-1">
               <span>Taxa de Resposta</span>
-              <span className="font-medium">{ops.responseRate}%</span>
+              <span className="font-medium">{responseRate}%</span>
             </div>
-            <Progress value={ops.responseRate} className="h-2" />
+            <Progress value={responseRate} className="h-2" />
           </div>
 
           <div>
             <div className="flex justify-between text-sm mb-1">
               <span>Taxa de Follow-up</span>
-              <span className="font-medium">{ops.followUpRate}%</span>
+              <span className="font-medium">{followUpRate}%</span>
             </div>
-            <Progress value={ops.followUpRate} className="h-2 bg-gray-100" />
+            <Progress value={followUpRate} className="h-2 bg-gray-100" />
           </div>
         </div>
 

@@ -20,12 +20,14 @@ interface KpiGridProps {
 }
 
 export function KpiGrid({ title, items, columns = 4, variant = 'default' }: KpiGridProps) {
-  const formatValue = (val: number | string, fmt: string | undefined) => {
+  const formatValue = (val: number | string | undefined | null, fmt: string | undefined) => {
+    if (val === undefined || val === null) return '0';
     if (typeof val === 'string') return val;
-    if (fmt === 'currency') return `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-    if (fmt === 'percent') return `${val.toFixed(1)}%`;
-    if (fmt === 'decimal') return val.toFixed(2);
-    return val.toLocaleString('pt-BR');
+    const numVal = Number(val) || 0;
+    if (fmt === 'currency') return `R$ ${numVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+    if (fmt === 'percent') return `${numVal.toFixed(1)}%`;
+    if (fmt === 'decimal') return numVal.toFixed(2);
+    return numVal.toLocaleString('pt-BR');
   };
 
   const formatTrend = (value: number | undefined) => {
