@@ -1,5 +1,3 @@
-import type { DashboardSummary } from './googleAdsDashboard';
-
 export type Json =
   | string
   | number
@@ -69,6 +67,84 @@ export type Database = {
           },
         ]
       }
+      google_ads_campaign_daily_metrics: {
+        Row: {
+          call_answered: number | null
+          call_impressions: number | null
+          calls: number | null
+          campaign_id: string
+          clicks: number | null
+          cpc: number | null
+          cpm: number | null
+          created_at: string | null
+          ctr: number | null
+          date: string
+          id: string
+          impression_share: number | null
+          impressions: number | null
+          lost_budget_share: number | null
+          lost_rank_share: number | null
+          tenant_id: string
+          top_impression_share: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          call_answered?: number | null
+          call_impressions?: number | null
+          calls?: number | null
+          campaign_id: string
+          clicks?: number | null
+          cpc?: number | null
+          cpm?: number | null
+          created_at?: string | null
+          ctr?: number | null
+          date: string
+          id?: string
+          impression_share?: number | null
+          impressions?: number | null
+          lost_budget_share?: number | null
+          lost_rank_share?: number | null
+          tenant_id: string
+          top_impression_share?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          call_answered?: number | null
+          call_impressions?: number | null
+          calls?: number | null
+          campaign_id?: string
+          clicks?: number | null
+          cpc?: number | null
+          cpm?: number | null
+          created_at?: string | null
+          ctr?: number | null
+          date?: string
+          id?: string
+          impression_share?: number | null
+          impressions?: number | null
+          lost_budget_share?: number | null
+          lost_rank_share?: number | null
+          tenant_id?: string
+          top_impression_share?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "google_ads_campaign_daily_metrics_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "google_ads_campaign_daily_metrics_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       integrations: {
         Row: {
           config: Json | null
@@ -106,6 +182,84 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "integrations_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_captures: {
+        Row: {
+          captured_at: string
+          gbraid: string | null
+          gclid: string | null
+          id: string
+          landing_page: string | null
+          lead_id: string | null
+          name: string | null
+          phone: string
+          platform: string
+          raw: Json
+          referrer: string | null
+          tenant_id: string
+          user_agent: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          wbraid: string | null
+        }
+        Insert: {
+          captured_at?: string
+          gbraid?: string | null
+          gclid?: string | null
+          id?: string
+          landing_page?: string | null
+          lead_id?: string | null
+          name?: string | null
+          phone: string
+          platform?: string
+          raw?: Json
+          referrer?: string | null
+          tenant_id: string
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          wbraid?: string | null
+        }
+        Update: {
+          captured_at?: string
+          gbraid?: string | null
+          gclid?: string | null
+          id?: string
+          landing_page?: string | null
+          lead_id?: string | null
+          name?: string | null
+          phone?: string
+          platform?: string
+          raw?: Json
+          referrer?: string | null
+          tenant_id?: string
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          wbraid?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_captures_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_captures_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -167,6 +321,7 @@ export type Database = {
           creative_name: string | null
           fbclid: string | null
           first_message_at: string | null
+          gbraid: string | null
           gclid: string | null
           id: string
           last_message_at: string | null
@@ -184,6 +339,7 @@ export type Database = {
           utm_content: string | null
           utm_medium: string | null
           utm_source: string | null
+          wbraid: string | null
         }
         Insert: {
           adset_name?: string | null
@@ -193,6 +349,7 @@ export type Database = {
           creative_name?: string | null
           fbclid?: string | null
           first_message_at?: string | null
+          gbraid?: string | null
           gclid?: string | null
           id?: string
           last_message_at?: string | null
@@ -210,6 +367,7 @@ export type Database = {
           utm_content?: string | null
           utm_medium?: string | null
           utm_source?: string | null
+          wbraid?: string | null
         }
         Update: {
           adset_name?: string | null
@@ -219,6 +377,7 @@ export type Database = {
           creative_name?: string | null
           fbclid?: string | null
           first_message_at?: string | null
+          gbraid?: string | null
           gclid?: string | null
           id?: string
           last_message_at?: string | null
@@ -236,6 +395,7 @@ export type Database = {
           utm_content?: string | null
           utm_medium?: string | null
           utm_source?: string | null
+          wbraid?: string | null
         }
         Relationships: [
           {
@@ -310,6 +470,57 @@ export type Database = {
           },
           {
             foreignKeyName: "offline_conversions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_demand: {
+        Row: {
+          created_at: string | null
+          id: string
+          lead_id: string | null
+          priority: string | null
+          product_name: string
+          sku: string | null
+          status: string | null
+          tenant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          lead_id?: string | null
+          priority?: string | null
+          product_name: string
+          sku?: string | null
+          status?: string | null
+          tenant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          lead_id?: string | null
+          priority?: string | null
+          product_name?: string
+          sku?: string | null
+          status?: string | null
+          tenant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_demand_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_demand_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -431,24 +642,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      dashboard_autovend_summary: {
-        Args: {
-          filters: Json
-        }
-        Returns: DashboardSummary
-      }
-      dashboard_google_summary: {
-        Args: {
-          filters: Json
-        }
-        Returns: DashboardSummary
-      }
-      get_user_id_by_email: {
-        Args: {
-          email_input: string
-        }
-        Returns: string | null
-      }
+      dashboard_autovend_summary: { Args: { filters: Json }; Returns: Json }
+      dashboard_google_summary: { Args: { filters: Json }; Returns: Json }
+      get_user_id_by_email: { Args: { email_input: string }; Returns: string }
+      get_user_tenant_ids: { Args: never; Returns: string[] }
+      is_tenant_admin: { Args: { tenant_uuid: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

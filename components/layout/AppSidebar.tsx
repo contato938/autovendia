@@ -37,6 +37,7 @@ const data = {
         { title: 'Vendas & Receita', url: '/sales' },
         { title: 'Atendimento', url: '/support' },
         { title: 'Clientes (LTV)', url: '/customers' },
+        { title: 'Demanda vs Estoque', url: '/dashboard/demand' },
       ],
     },
     {
